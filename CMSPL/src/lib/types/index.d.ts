@@ -1,4 +1,4 @@
-type client = {
+type Client = {
   clientId: number
   userId: string
   firstName: string

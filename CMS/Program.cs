@@ -1,6 +1,7 @@
 
 using AutoMapper;
 using CMSAPI.Mappings;
+using CMSApplication.Clients.Queries;
 using CMSDb.DbModels;
 using CMSRep.IServices;
 using CMSRep.Services;
@@ -23,10 +24,16 @@ builder.Services.AddSingleton(new MapperConfiguration(cfg =>
     cfg.AddProfile<MappingProfile>();
 }).CreateMapper());
 builder.Services.AddCors();
+builder.Services.AddMediatR(x =>
+    x.RegisterServicesFromAssemblyContaining<GetAllClients.Handler>());
+
+//builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000", "https://localhost:3000"));
+
+
 
 if (app.Environment.IsDevelopment())
 {

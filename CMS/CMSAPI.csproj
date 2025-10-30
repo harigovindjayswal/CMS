@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CMSRep\CMSRep.csproj" />
+    <ProjectReference Include="..\CMSRep\CMSApplication.csproj" />
   </ItemGroup>
 
 </Project>
