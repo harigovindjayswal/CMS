@@ -7,13 +7,14 @@ import {
   Chip,
   Typography,
 } from "@mui/material";
+import { useClients } from "../../../lib/hooks/useClients";
 
 type Prop = {
   clients: Client;
-  selectClient: (id:number)=>void;
-  handleDelete:(id:number)=>void;
+  selectClient: (id: number) => void;
 };
-export default function ClientCard({ clients,selectClient,handleDelete }: Prop) {
+export default function ClientCard({ clients, selectClient }: Prop) {
+  const { deleteClient } = useClients();
   return (
     <>
       <Card sx={{ borderRadius: 3 }}>
@@ -27,15 +28,24 @@ export default function ClientCard({ clients,selectClient,handleDelete }: Prop) 
         </CardContent>
         <CardActions>
           <Chip variant="outlined" label={clients.mobileNo} />
-          <Box display={'flex'} gap={3}>
-            <Button onClick={()=>selectClient(clients.clientId)} size="medium" variant="contained">
-            View
-          </Button>
-          <Button onClick={()=>handleDelete(clients.clientId)} size="medium" color="error" variant="contained">
-            Delete
-          </Button>
+          <Box display={"flex"} gap={3}>
+            <Button
+              onClick={() => selectClient(clients.clientId)}
+              size="medium"
+              variant="contained"
+            >
+              View
+            </Button>
+            <Button
+              onClick={() => deleteClient.mutate(clients.clientId)}
+              size="medium"
+              color="error"
+              disabled={deleteClient.isPending}
+              variant="contained"
+            >
+              Delete
+            </Button>
           </Box>
-          
         </CardActions>
       </Card>
     </>
