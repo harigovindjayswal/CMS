@@ -3,15 +3,14 @@ import {
   Box,
   Toolbar,
   Typography,
-  Button,
   Container,
   MenuItem,
 } from "@mui/material";
 import { Group } from "@mui/icons-material";
-type Props ={
-  openForm:()=>void;
-}
-export default function NavBar({openForm}: Props) {
+import { NavLink } from "react-router";
+import MenuItemLink from "../shared/components/MenuItemLink";
+
+export default function NavBar() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -24,7 +23,11 @@ export default function NavBar({openForm}: Props) {
         <Container maxWidth="xl">
           <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
             <Box>
-              <MenuItem sx={{ display: "flex", gap: 2 }}>
+              <MenuItem
+                sx={{ display: "flex", gap: 2 }}
+                component={NavLink}
+                to="/"
+              >
                 <Group fontSize="large"></Group>
                 <Typography variant="h4" fontWeight="bold">
                   Welcome To CMS
@@ -32,37 +35,10 @@ export default function NavBar({openForm}: Props) {
               </MenuItem>
             </Box>
             <Box sx={{ display: "flex" }}>
-              <MenuItem
-                sx={{
-                  fontSize: "1.2rem",
-                  textTransform: "uppercase",
-                  fontWeight: "bold",
-                }}
-              >
-                Clients
-              </MenuItem>
-              <MenuItem
-                sx={{
-                  fontSize: "1.2rem",
-                  textTransform: "uppercase",
-                  fontWeight: "bold",
-                }}
-              >
-                About
-              </MenuItem>
-              <MenuItem
-                sx={{
-                  fontSize: "1.2rem",
-                  textTransform: "uppercase",
-                  fontWeight: "bold",
-                }}
-              >
-                Contact
-              </MenuItem>
+              <MenuItemLink to="/clients">Clients</MenuItemLink>
+              <MenuItemLink to="/createClient">Create Client</MenuItemLink>
             </Box>
-            <Button size="large" onClick={openForm} variant="contained" color="warning">
-              Create Client
-            </Button>
+            <MenuItem>User Manual</MenuItem>
           </Toolbar>
         </Container>
       </AppBar>

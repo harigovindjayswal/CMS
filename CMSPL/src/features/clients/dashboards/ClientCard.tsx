@@ -8,12 +8,12 @@ import {
   Typography,
 } from "@mui/material";
 import { useClients } from "../../../lib/hooks/useClients";
+import { Link } from "react-router";
 
 type Prop = {
   clients: Client;
-  selectClient: (id: number) => void;
 };
-export default function ClientCard({ clients, selectClient }: Prop) {
+export default function ClientCard({ clients }: Prop) {
   const { deleteClient } = useClients();
   return (
     <>
@@ -30,7 +30,7 @@ export default function ClientCard({ clients, selectClient }: Prop) {
           <Chip variant="outlined" label={clients.mobileNo} />
           <Box display={"flex"} gap={3}>
             <Button
-              onClick={() => selectClient(clients.clientId)}
+             component={Link} to={`/clientDetails/${clients.clientId}`}
               size="medium"
               variant="contained"
             >

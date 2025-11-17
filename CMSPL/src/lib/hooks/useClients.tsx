@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import agent from "../api/agent";
 
-export const useClients = () => {
+export const useClients = (id?:number) => {
   const queryClient = useQueryClient();
   const { data: clients, isPending } = useQuery({
     queryKey: ["clients"],
@@ -10,7 +10,14 @@ export const useClients = () => {
       return response.data;
     },
   });
-
+  const {data:client,isLoading:isClientLoading}=useQuery({
+    queryKey:['clients',id],
+    queryFn:async ()=>{
+       const response=await agent.get<Client>(`/Clients/Client/${id}`)
+       return response.data;
+    },
+    enabled:!!id
+  })
   const updateClient = useMutation({
     mutationFn: async (client: Client) => {
       console.log(client);
@@ -24,7 +31,8 @@ export const useClients = () => {
   });
   const createClient = useMutation({
     mutationFn: async (client: Client) => {
-      await agent.post("/Clients/Client",client);   
+     const response = await agent.post("/Clients/Client",client);  
+     return response.data; 
     },
     onSuccess: async ()=>{
        await queryClient.invalidateQueries({
@@ -42,11 +50,14 @@ export const useClients = () => {
        })
     }
   });
+
   return {
     clients,
     isPending,
     updateClient,
     createClient,
-    deleteClient
+    deleteClient,
+    client,
+    isClientLoading
   };
 };

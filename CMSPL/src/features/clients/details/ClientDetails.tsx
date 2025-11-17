@@ -6,21 +6,18 @@ import {
   CardMedia,
   Typography,
 } from "@mui/material";
+import { useParams } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useClients } from "../../../lib/hooks/useClients";
-type Props = {
-  selectedClient: Client;
-  cancelSelectClient: () => void;
-  openForm: (id: number) => void;
-};
-export default function ClientDetails({
-  selectedClient,
-  cancelSelectClient,
-  openForm,
-}: Props) {
-  const { clients } = useClients();
-  
-  const client = clients?.find((x) => (x.clientId = selectedClient.clientId));
-  if (!client) return <Typography>Loading...</Typography>;
+
+export default function ClientDetails() {
+  const navigate = useNavigate();
+
+  const {id} = useParams();
+  const { client, isClientLoading } = useClients(Number(id));
+
+  if (isClientLoading) return <Typography>Loading...</Typography>;
+  if (!client) return <Typography>Client Not Found</Typography>;
   return (
     <Card sx={{ borderRadius: 3 }}>
       <CardMedia
@@ -35,10 +32,14 @@ export default function ClientDetails({
         <Typography variant="body1">{client.pinCode}</Typography>
       </CardContent>
       <CardActions>
-        <Button color="primary" onClick={() => openForm(client.clientId)}>
+        <Button
+          color="primary"
+          component={Link}
+          to={`/manage/${client.clientId}`}
+        >
           Edit
         </Button>
-        <Button onClick={() => cancelSelectClient()} color="inherit">
+        <Button onClick={() => navigate("/clients")} color="inherit">
           Cancel
         </Button>
       </CardActions>

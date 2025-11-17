@@ -1,13 +1,14 @@
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import type { FormEvent } from "react";
 import { useClients } from "../../../lib/hooks/useClients";
-type Props = {
-  client?: Client;
-  closeForm: () => void;
-};
-export default function ClientForm({ client, closeForm }: Props) {
-  const { updateClient, createClient } = useClients();
+import { useNavigate, useParams } from "react-router";
 
+export default function ClientForm() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { updateClient, createClient, client, isClientLoading } = useClients(
+    Number(id)
+  );
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -41,8 +42,7 @@ export default function ClientForm({ client, closeForm }: Props) {
       };
 
       await updateClient.mutateAsync(payload as Client);
-
-      closeForm();
+      navigate(`/clientDetails/${client.clientId}`);
     } else {
       const payload: Client = {
         clientId: Number(data.clientId),
@@ -64,14 +64,18 @@ export default function ClientForm({ client, closeForm }: Props) {
         createdDate: String(data.createdDate),
         isActive: data.isActive === "true",
       };
-      await createClient.mutateAsync(payload as Client);
-      closeForm();
+      await createClient.mutate(payload as Client, {
+        onSuccess: (id) => {
+          navigate(`/clientDetails/${id}`);
+        },
+      });
     }
   };
+  if (isClientLoading) return <Typography>Loading...</Typography>;
   return (
     <Paper sx={{ borderRadius: 3, padding: 3 }}>
       <Typography variant="h5" gutterBottom color="primary">
-        Create Client
+        {client ? 'Edit Client' : 'Create Client'}
       </Typography>
       <Box
         component="form"
@@ -172,7 +176,7 @@ export default function ClientForm({ client, closeForm }: Props) {
           defaultValue={client?.isActive}
         />
         <Box display="flex" justifyContent="end" gap={3}>
-          <Button color="inherit" onClick={closeForm}>
+          <Button color="inherit" onClick={() => {}}>
             Cancel
           </Button>
           <Button
