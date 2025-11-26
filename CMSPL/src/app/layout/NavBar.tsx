@@ -30,7 +30,7 @@ export default function NavBar() {
               >
                 <Group fontSize="large"></Group>
                 <Typography variant="h4" fontWeight="bold">
-                  Welcome To CMS
+                  CMS
                 </Typography>
               </MenuItem>
             </Box>

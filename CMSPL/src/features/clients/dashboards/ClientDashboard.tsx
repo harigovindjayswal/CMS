@@ -1,5 +1,6 @@
 import { Grid2 } from "@mui/material";
 import ClientList from "./ClientList";
+import ClientFilters from "./ClientFilters";
 
 export default function ClientDashboard() {
   return (
@@ -9,7 +10,7 @@ export default function ClientDashboard() {
            <ClientList  />       
         </Grid2>
         <Grid2 size={5}>
-          Client filter here...
+          <ClientFilters />
         </Grid2>
       </Grid2>
     </>

@@ -3,7 +3,7 @@ import App from "../layout/App";
 import HomePage from "../../features/home/HomePage";
 import ClientDashboard from "../../features/clients/dashboards/ClientDashboard";
 import ClientForm from "../../features/clients/form/ClientForm";
-import ClientDetails from "../../features/clients/details/ClientDetails";
+import ClientDetailsPage from "../../features/clients/details/ClientDetailsPage";
 
 export const router=createBrowserRouter([
     {
@@ -12,7 +12,7 @@ export const router=createBrowserRouter([
         children:[
             {path:'',element:<HomePage />},
             {path:'clients',element:<ClientDashboard />},
-            {path:'clientDetails/:id',element:<ClientDetails />},
+            {path:'clientDetails/:id',element:<ClientDetailsPage />},
             {path:'createClient',element:<ClientForm key={'Create'} />},
             {path:'manage/:id',element:<ClientForm />},
         ]
