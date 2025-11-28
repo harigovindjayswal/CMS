@@ -1,14 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import agent from "../api/agent";
+import { useLocation } from "react-router";
 
 export const useClients = (id?:number) => {
   const queryClient = useQueryClient();
+  const location=useLocation();
   const { data: clients, isPending } = useQuery({
     queryKey: ["clients"],
     queryFn: async () => {
       const response = await agent.get<Client[]>("/Clients/Client");
       return response.data;
     },
+    enabled:!id && location.pathname==='/clients'
   });
   const {data:client,isLoading:isClientLoading}=useQuery({
     queryKey:['clients',id],
