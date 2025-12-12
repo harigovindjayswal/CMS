@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 
-namespace CMSRep.DbModels;
+namespace CMSApplication.Clients.DTO;
 
-public partial class ClientDTO
+public class BaseClientDTO
 {
-    public int? ClientId { get; set; }
-
     public string? UserId { get; set; }
 
     public string? FirstName { get; set; }
@@ -40,6 +37,4 @@ public partial class ClientDTO
     public DateTime? CreatedDate { get; set; }
 
     public bool? IsActive { get; set; }
-
-
 }

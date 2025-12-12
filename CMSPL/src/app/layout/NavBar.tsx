@@ -43,6 +43,7 @@ export default function NavBar() {
               <MenuItemLink to="/clients">Clients</MenuItemLink>
               <MenuItemLink to="/createClient">Create Client</MenuItemLink>
               <MenuItemLink to="/counter">Counter</MenuItemLink>
+              <MenuItemLink to="/errors">Errors</MenuItemLink>
             </Box>
             <MenuItem>User Manual</MenuItem>
           </Toolbar>

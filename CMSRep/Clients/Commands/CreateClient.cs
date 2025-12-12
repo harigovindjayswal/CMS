@@ -1,13 +1,14 @@
-﻿using AutoMapper;
-using CMSDb.DbModels;
-using CMSRep.DbModels;
-using MediatR;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using CMSApplication.Clients.DTO;
+using CMSDb.DbModels;
+using FluentValidation;
+using MediatR;
 
 namespace CMSApplication.Clients.Commands
 {
@@ -15,7 +16,7 @@ namespace CMSApplication.Clients.Commands
     {
         public class Command : IRequest<int>
         {
-            public required ClientDTO clientDto { get; set; }
+            public required CreateClientDTO clientDto { get; set; }
         }
 
         public class Handler(CmsContext context,IMapper _mapper) : IRequestHandler<Command, int>

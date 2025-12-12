@@ -10,22 +10,24 @@ namespace CMSApplication.Clients.Commands
 {
     public class DeleteClient
     {
-        public class Command : IRequest<int>
+        public class Command : IRequest<Result<Unit>>
         {
             public required int Id { get; set; }
         }
 
-        public class Handler(CmsContext context) : IRequestHandler<Command,int>
+        public class Handler(CmsContext context) : IRequestHandler<Command, Result<Unit>>
         {
-            public async Task<int> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var client = await context.Clients
-                    .FindAsync([request.Id], cancellationToken)
-                        ?? throw new Exception("Cannot find activity");
+                    .FindAsync(request.Id, cancellationToken);
+                if (client == null) return Result<Unit>.Failure("Client not found", 404);
 
                 context.Remove(client);
 
-               return await context.SaveChangesAsync(cancellationToken);
+                var res = await context.SaveChangesAsync(cancellationToken);
+                if (res == 0) return Result<Unit>.Failure("Failed to delete client !", 400);
+                return Result<Unit>.Success(Unit.Value);
             }
         }
     }

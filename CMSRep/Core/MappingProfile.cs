@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using CMSApplication.Clients.DTO;
 using CMSDb.DbModels;
-using CMSRep.DbModels;
 
 namespace CMSAPI.Mappings
 {
@@ -8,7 +8,8 @@ namespace CMSAPI.Mappings
     {
         public MappingProfile()
         {
-            CreateMap<Client, ClientDTO>().ReverseMap();
+            CreateMap<Client, CreateClientDTO>().ReverseMap();
+            CreateMap<Client, EditClientDTO>().ReverseMap();
             
         }
     }
