@@ -28,6 +28,8 @@ namespace CMSApplication.Clients.Commands
                 {
                     return Result<Unit>.Failure("Client Not Found !", 404);
                 }
+                client.UpdatedBy="defaultUser";
+                client.UpdatedDate=DateTime.Now;
                 context.Clients.Update(client);
                 var res = await context.SaveChangesAsync(cancellationToken);
                 if (res == 0) return Result<Unit>.Failure("Failed to update client !", 400);

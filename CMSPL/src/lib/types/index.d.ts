@@ -1,6 +1,6 @@
 type Client = {
-  clientId: number
-  userId: string
+  clientId?: number
+  // userId: string
   firstName: string
   middleName: string
   lastName: string
@@ -9,12 +9,12 @@ type Client = {
   address: string
   state: number
   district: number
-  city: number
+  city: string
   pinCode: string
   notes: string
-  updatedBy: string
-  updatedDate: string
-  createdBy: string
-  createdDate: string
-  isActive: boolean
+  // updatedBy: string
+  // updatedDate: string
+  // createdBy: string
+  // createdDate: string
+  // isActive: boolean
 }

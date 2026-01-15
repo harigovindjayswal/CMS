@@ -1,180 +1,135 @@
-import { Box, Button, Paper, TextField, Typography } from "@mui/material";
-import type { FormEvent } from "react";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { useClients } from "../../../lib/hooks/useClients";
 import { useNavigate, useParams } from "react-router";
-
+import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import {
+  clientSchema,
+  type ClientSchema,
+} from "../../../lib/schemas/ClientSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import TextInput from "../../../app/shared/components/TextInput";
+import SelectInput from "../../../app/shared/components/SelectInput";
+import { categoryOptions } from "./categoryOptions";
+import { toast } from "react-toastify";
 export default function ClientForm() {
-  const { id } = useParams();
   const navigate = useNavigate();
+  const { id } = useParams();
   const { updateClient, createClient, client, isClientLoading } = useClients(
     Number(id)
   );
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const data: { [key: string]: FormDataEntryValue } = {};
-    formData.forEach((value, key) => {
-      data[key] = value;
-    });
+  const { reset, control, handleSubmit } = useForm<ClientSchema>({
+    mode: "onTouched",
+    resolver: zodResolver(clientSchema) as any,
+    defaultValues: {
+      //userId: "",
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      emailId: "",
+      mobileNo: "",
+      address: "",
+      state: 0, // numeric → use 0 (or -1 if you prefer “not selected”)
+      district: 0, // numeric → use 0
+      city: "",
+      pinCode: "",
+      notes: "",
+      // updatedBy: "",
+      // updatedDate: "", // ISO string later
+      // createdBy: "",
+      // createdDate: "", // ISO string later
 
-    if (client) {
-      data.clientId = client.clientId.toString();
-      // Convert types
-      const payload: Client = {
-        clientId: Number(data.clientId),
-        userId: String(data.userId),
-        firstName: String(data.firstName),
-        middleName: String(data.middleName),
-        lastName: String(data.lastName),
-        emailId: String(data.emailId),
-        mobileNo: String(data.mobileNo),
-        address: String(data.address),
-        state: Number(data.state),
-        district: Number(data.district),
-        city: Number(data.city),
-        pinCode: String(data.pinCode),
-        notes: String(data.notes),
-        updatedBy: String(data.updatedBy),
-        updatedDate: String(data.updatedDate),
-        createdBy: String(data.createdBy),
-        createdDate: String(data.createdDate),
-        isActive: data.isActive === "true",
-      };
-
-      await updateClient.mutateAsync(payload as Client);
-      navigate(`/clientDetails/${client.clientId}`);
-    } else {
-      const payload: Client = {
-        clientId: Number(data.clientId),
-        userId: String(data.userId),
-        firstName: String(data.firstName),
-        middleName: String(data.middleName),
-        lastName: String(data.lastName),
-        emailId: String(data.emailId),
-        mobileNo: String(data.mobileNo),
-        address: String(data.address),
-        state: Number(data.state),
-        district: Number(data.district),
-        city: Number(data.city),
-        pinCode: String(data.pinCode),
-        notes: String(data.notes),
-        updatedBy: String(data.updatedBy),
-        updatedDate: String(data.updatedDate),
-        createdBy: String(data.createdBy),
-        createdDate: String(data.createdDate),
-        isActive: data.isActive === "true",
-      };
-      await createClient.mutate(payload as Client, {
-        onSuccess: (id) => {
-          navigate(`/clientDetails/${id}`);
-        },
-      });
+      //   isActive:true
+    },
+  });
+  const onSubmit = async (data: ClientSchema) => {
+    const { ...rest } = data;
+    const flattenedData = { ...rest };
+    try {
+      if (client?.clientId) {
+        updateClient.mutate(
+          { ...client, ...flattenedData },
+          {
+            onSuccess: () => navigate(`/clientDetails/${client.clientId}`),
+            onError: (error) => {
+              if (Array.isArray(error)) {
+                error.forEach((e) => toast.warning(e));
+              } else {
+                toast.warning(error?.message ?? "Something went wrong");
+              }
+            },
+          }
+        );
+      } else {
+        console.log(flattenedData);
+        createClient.mutate(flattenedData, {
+          onSuccess: (clientId) => navigate(`/clientDetails/${clientId}`),
+          onError: (error) => {
+            if (Array.isArray(error)) {
+              error.forEach((e) => toast.warning(e));
+            } else {
+              toast.warning(error?.message ?? "Something went wrong");
+            }
+          },
+        });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
+  useEffect(() => {
+    if (client) reset(client);
+  }, [client, reset]);
+
   if (isClientLoading) return <Typography>Loading...</Typography>;
   return (
     <Paper sx={{ borderRadius: 3, padding: 3 }}>
       <Typography variant="h5" gutterBottom color="primary">
-        {client ? 'Edit Client' : 'Create Client'}
+        {client ? "Edit Client" : "Create Client"}
       </Typography>
       <Box
         component="form"
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
         display="flex"
         flexDirection="column"
         gap={3}
       >
-        <TextField
-          name="userId"
-          label="User Id"
-          defaultValue={client?.userId}
-        />
-        <TextField
-          name="firstName"
-          label="First Name"
-          defaultValue={client?.firstName}
-        />
-        <TextField
-          name="middleName"
-          label="Middle Name"
-          defaultValue={client?.middleName}
-        />
-        <TextField
-          name="lastName"
-          label="Last Name"
-          defaultValue={client?.lastName}
-        />
-        <TextField
-          name="emailId"
-          label="Email"
-          defaultValue={client?.emailId}
-        />
-        <TextField
-          name="mobileNo"
-          label="Mobile"
-          defaultValue={client?.mobileNo}
-        />
-        <TextField
-          name="address"
-          label="Address"
-          multiline
-          rows={3}
-          defaultValue={client?.address}
-        />
-        <TextField name="state" label="State" defaultValue={client?.state} />
-        <TextField
-          name="district"
-          label="District"
-          defaultValue={client?.district}
-        />
-        <TextField name="city" label="City" defaultValue={client?.city} />
-        <TextField
-          name="pinCode"
-          label="Pin Code"
-          defaultValue={client?.pinCode}
-        />
-        <TextField
+        <TextInput label="firstName" control={control} name="firstName" />
+        <TextInput label="middleName" control={control} name="middleName" />
+        <TextInput label="lastName" control={control} name="lastName" />
+
+        <TextInput label="emailId" control={control} name="emailId" />
+        <TextInput label="mobileNo" control={control} name="mobileNo" />
+        <TextInput label="address" control={control} name="address" />
+        {/* <TextInput label="state" control={control} name="state" />
+
+        <TextInput label="district" control={control} name="district" /> */}
+        <Box display="flex" gap={3}>
+          <SelectInput
+            items={categoryOptions}
+            label="state"
+            control={control}
+            name="state"
+          />
+        </Box>
+        <Box display="flex" gap={3}>
+          <SelectInput
+            items={categoryOptions}
+            label="district"
+            control={control}
+            name="district"
+          />
+        </Box>
+        <TextInput label="city" control={control} name="city" />
+        <TextInput label="pinCode" control={control} name="pinCode" />
+        <TextInput
+          label="notes"
+          control={control}
           name="notes"
-          label="Notes"
           multiline
           rows={3}
-          defaultValue={client?.notes}
         />
-        <TextField
-          name="createdBy"
-          label="Created By"
-          defaultValue={client?.createdBy}
-        />
-        <TextField
-          name="createdDate"
-          label="Created Date"
-          type="date"
-          defaultValue={
-            client?.createdDate
-              ? new Date(client?.createdDate).toISOString().split("T")[0]
-              : new Date().toISOString().split("T")[0]
-          }
-        />
-        <TextField
-          name="updatedBy"
-          label="Updated By"
-          defaultValue={client?.updatedBy}
-        />
-        <TextField
-          name="updatedDate"
-          label="Updated Date"
-          type="date"
-          defaultValue={
-            client?.updatedDate
-              ? new Date(client?.updatedDate).toISOString().split("T")[0]
-              : new Date().toISOString().split("T")[0]
-          }
-        />
-        <TextField
-          name="isActive"
-          label="Is Active"
-          defaultValue={client?.isActive}
-        />
+
         <Box display="flex" justifyContent="end" gap={3}>
           <Button color="inherit" onClick={() => {}}>
             Cancel

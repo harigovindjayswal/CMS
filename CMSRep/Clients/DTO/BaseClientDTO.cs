@@ -4,7 +4,7 @@ namespace CMSApplication.Clients.DTO;
 
 public class BaseClientDTO
 {
-    public string? UserId { get; set; }
+    // public string? UserId { get; set; }
 
     public string? FirstName { get; set; }
 
@@ -22,19 +22,19 @@ public class BaseClientDTO
 
     public int? District { get; set; }
 
-    public int? City { get; set; }
+    public string? City { get; set; }
 
     public string? PinCode { get; set; }
 
     public string? Notes { get; set; }
 
-    public string? UpdatedBy { get; set; }
+    //public string? UpdatedBy { get; set; }
 
-    public DateTime? UpdatedDate { get; set; }
+    // public DateTime? UpdatedDate { get; set; }
 
-    public string? CreatedBy { get; set; }
+    // public string? CreatedBy { get; set; }
 
-    public DateTime? CreatedDate { get; set; }
+    // public DateTime? CreatedDate { get; set; }
 
-    public bool? IsActive { get; set; }
+    // public bool? IsActive { get; set; }
 }

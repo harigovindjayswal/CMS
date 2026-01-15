@@ -24,6 +24,9 @@ namespace CMSApplication.Clients.Commands
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
                 var client = _mapper.Map<Client>(request.clientDto);
+                client.CreatedBy="defaultUser";
+                client.CreatedDate=DateTime.Now;
+                client.IsActive=true;
                 context.Clients.Add(client);
                 await context.SaveChangesAsync(cancellationToken);
                 return client.ClientId;

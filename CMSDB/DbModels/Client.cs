@@ -25,7 +25,7 @@ public partial class Client
 
     public int? District { get; set; }
 
-    public int? City { get; set; }
+    public string? City { get; set; }
 
     public string? PinCode { get; set; }
 

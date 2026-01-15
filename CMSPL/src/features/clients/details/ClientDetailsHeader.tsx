@@ -65,7 +65,7 @@ export default function ClientDetailsHeader({client}: Props) {
                                 variant="contained"
                                 color="primary"
                                 component={Link}
-                                to={`/manage/clientId`}
+                                to={`/manage/${client.clientId}`}
                                 disabled={isCancelled}
                             >
                                 Manage Event
