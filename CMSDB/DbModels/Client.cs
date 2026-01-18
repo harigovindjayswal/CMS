@@ -40,10 +40,4 @@ public partial class Client
     public DateTime? CreatedDate { get; set; }
 
     public bool? IsActive { get; set; }
-
-    public virtual ICollection<Case> Cases { get; set; } = new List<Case>();
-
-    public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
-
-    public virtual AspNetUser? User { get; set; }
 }

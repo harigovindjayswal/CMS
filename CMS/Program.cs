@@ -1,27 +1,38 @@
 
 using Application.Core;
 using AutoMapper;
+using CMSAPI;
 using CMSAPI.Mappings;
 using CMSApplication.Clients.Commands;
 using CMSApplication.Clients.Queries;
 using CMSApplication.Clients.Validatators;
 using CMSDb.DbModels;
+using CMSDb.IdentityModels;
 using CMSRep.IServices;
 using CMSRep.Services;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(opt => 
+{
+    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+    opt.Filters.Add(new AuthorizeFilter(policy));
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<CmsContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<CmsIdentityContext>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<ICMSService, CMSService>();
 builder.Services.AddSingleton(new MapperConfiguration(cfg =>
 {
@@ -39,6 +50,13 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateClientValidator>();
 builder.Services.AddTransient<ExceptionMiddleware>();
 //builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
+builder.Services.AddIdentityApiEndpoints<User>(opt =>
+{
+    opt.User.RequireUniqueEmail = true;
+})
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<CmsIdentityContext>();
+
 var app = builder.Build();
 
 // 1️⃣ Developer tools (Swagger)
@@ -54,14 +72,11 @@ app.UseHttpsRedirection();
 // 3️⃣ Routing happens implicitly in ASP.NET Core 6+ templates
 // app.UseRouting();  // Not required unless using endpoints manually
 
-// 4️⃣ CORS 
-app.UseCors(options => options
-    .AllowAnyHeader()
-    .AllowAnyMethod()
-    .WithOrigins("http://localhost:3000", "https://localhost:3000")
-);
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
+    .AllowCredentials()
+    .WithOrigins("http://localhost:3000", "https://localhost:3000"));
 
-// 5️⃣ Authentication / Authorization
+app.UseAuthentication();
 app.UseAuthorization();
 
 // 6️⃣ Your custom exception middleware (must wrap controllers!)
@@ -69,5 +84,6 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 // 7️⃣ Endpoint execution
 app.MapControllers();
+app.MapGroup("api").MapIdentityApi<User>(); // api/login
 
 app.Run();

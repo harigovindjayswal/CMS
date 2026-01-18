@@ -20,8 +20,4 @@ public partial class Task
     public DateTime? DueDate { get; set; }
 
     public DateTime? CreatedAt { get; set; }
-
-    public virtual AspNetUser AssignedToNavigation { get; set; } = null!;
-
-    public virtual Case Case { get; set; } = null!;
 }

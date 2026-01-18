@@ -16,8 +16,4 @@ public partial class Note
     public bool? IsPrivate { get; set; }
 
     public DateTime? CreatedAt { get; set; }
-
-    public virtual Case Case { get; set; } = null!;
-
-    public virtual AspNetUser User { get; set; } = null!;
 }

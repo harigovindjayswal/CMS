@@ -18,10 +18,4 @@ public partial class Invoice
     public DateTime? IssuedAt { get; set; }
 
     public DateTime? DueDate { get; set; }
-
-    public virtual Case Case { get; set; } = null!;
-
-    public virtual Client Client { get; set; } = null!;
-
-    public virtual ICollection<InvoiceItem> InvoiceItems { get; set; } = new List<InvoiceItem>();
 }

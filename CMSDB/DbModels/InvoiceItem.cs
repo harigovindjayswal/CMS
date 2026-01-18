@@ -16,6 +16,4 @@ public partial class InvoiceItem
     public decimal UnitPrice { get; set; }
 
     public decimal? Total { get; set; }
-
-    public virtual Invoice Invoice { get; set; } = null!;
 }

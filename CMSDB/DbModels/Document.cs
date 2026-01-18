@@ -20,8 +20,4 @@ public partial class Document
     public DateTime? UploadedAt { get; set; }
 
     public int? Version { get; set; }
-
-    public virtual Case Case { get; set; } = null!;
-
-    public virtual AspNetUser UploadedByNavigation { get; set; } = null!;
 }

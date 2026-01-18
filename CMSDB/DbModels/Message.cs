@@ -16,10 +16,4 @@ public partial class Message
     public string? Content { get; set; }
 
     public DateTime? SentAt { get; set; }
-
-    public virtual Case Case { get; set; } = null!;
-
-    public virtual AspNetUser FromUser { get; set; } = null!;
-
-    public virtual AspNetUser ToUser { get; set; } = null!;
 }

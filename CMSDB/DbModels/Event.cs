@@ -20,8 +20,4 @@ public partial class Event
     public string CreatedBy { get; set; } = null!;
 
     public DateTime? CreatedAt { get; set; }
-
-    public virtual Case Case { get; set; } = null!;
-
-    public virtual AspNetUser CreatedByNavigation { get; set; } = null!;
 }

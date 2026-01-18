@@ -28,20 +28,4 @@ public partial class Case
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
-
-    public virtual AspNetUser? AssignedToNavigation { get; set; }
-
-    public virtual Client Client { get; set; } = null!;
-
-    public virtual ICollection<Document> Documents { get; set; } = new List<Document>();
-
-    public virtual ICollection<Event> Events { get; set; } = new List<Event>();
-
-    public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
-
-    public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
-
-    public virtual ICollection<Note> Notes { get; set; } = new List<Note>();
-
-    public virtual ICollection<Task> Tasks { get; set; } = new List<Task>();
 }

@@ -18,6 +18,4 @@ public partial class AuditLog
     public DateTime? Timestamp { get; set; }
 
     public string? Ipaddress { get; set; }
-
-    public virtual AspNetUser User { get; set; } = null!;
 }

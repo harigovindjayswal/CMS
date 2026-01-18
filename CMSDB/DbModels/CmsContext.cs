@@ -15,18 +15,6 @@ public partial class CmsContext : DbContext
     {
     }
 
-    public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
-
-    public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; }
-
-    public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
-
-    public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; }
-
-    public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
-
-    public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
-
     public virtual DbSet<AuditLog> AuditLogs { get; set; }
 
     public virtual DbSet<Case> Cases { get; set; }
@@ -57,57 +45,7 @@ public partial class CmsContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<AspNetRole>(entity =>
-        {
-            entity.Property(e => e.Name).HasMaxLength(256);
-            entity.Property(e => e.NormalizedName).HasMaxLength(256);
-        });
-
-        modelBuilder.Entity<AspNetRoleClaim>(entity =>
-        {
-            entity.Property(e => e.RoleId).HasMaxLength(450);
-        });
-
-        modelBuilder.Entity<AspNetUser>(entity =>
-        {
-            entity.Property(e => e.Email).HasMaxLength(256);
-            entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
-            entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
-            entity.Property(e => e.UserName).HasMaxLength(256);
-
-            entity.HasMany(d => d.Roles).WithMany(p => p.Users)
-                .UsingEntity<Dictionary<string, object>>(
-                    "AspNetUserRole",
-                    r => r.HasOne<AspNetRole>().WithMany()
-                        .HasForeignKey("RoleId")
-                        .HasConstraintName("FK_AspNetUserRoles_AspNetRoles"),
-                    l => l.HasOne<AspNetUser>().WithMany()
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("FK_AspNetUserRoles_AspNetUsers"),
-                    j =>
-                    {
-                        j.HasKey("UserId", "RoleId");
-                        j.ToTable("AspNetUserRoles");
-                    });
-        });
-
-        modelBuilder.Entity<AspNetUserClaim>(entity =>
-        {
-            entity.Property(e => e.UserId).HasMaxLength(450);
-        });
-
-        modelBuilder.Entity<AspNetUserLogin>(entity =>
-        {
-            entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
-
-            entity.Property(e => e.UserId).HasMaxLength(450);
-        });
-
-        modelBuilder.Entity<AspNetUserToken>(entity =>
-        {
-            entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
-        });
-
+        
         modelBuilder.Entity<AuditLog>(entity =>
         {
             entity.HasKey(e => e.LogId).HasName("PK__AuditLog__5E5499A813DDEF67");
@@ -125,11 +63,6 @@ public partial class CmsContext : DbContext
             entity.Property(e => e.UserId)
                 .HasMaxLength(450)
                 .HasColumnName("UserID");
-
-            entity.HasOne(d => d.User).WithMany(p => p.AuditLogs)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_AuditLogs_Users");
         });
 
         modelBuilder.Entity<Case>(entity =>
@@ -153,15 +86,6 @@ public partial class CmsContext : DbContext
                 .HasDefaultValue("Open");
             entity.Property(e => e.Title).HasMaxLength(200);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-            entity.HasOne(d => d.AssignedToNavigation).WithMany(p => p.Cases)
-                .HasForeignKey(d => d.AssignedTo)
-                .HasConstraintName("FK_Cases_Users");
-
-            entity.HasOne(d => d.Client).WithMany(p => p.Cases)
-                .HasForeignKey(d => d.ClientId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Cases_Clients");
         });
 
         modelBuilder.Entity<Client>(entity =>
@@ -170,6 +94,9 @@ public partial class CmsContext : DbContext
 
             entity.Property(e => e.ClientId).HasColumnName("ClientID");
             entity.Property(e => e.Address).HasMaxLength(255);
+            entity.Property(e => e.City)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.CreatedBy).HasMaxLength(450);
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
@@ -198,10 +125,6 @@ public partial class CmsContext : DbContext
             entity.Property(e => e.UserId)
                 .HasMaxLength(450)
                 .HasColumnName("UserID");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Clients)
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK_Clients_Users");
         });
 
         modelBuilder.Entity<Document>(entity =>
@@ -218,16 +141,6 @@ public partial class CmsContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.UploadedBy).HasMaxLength(450);
             entity.Property(e => e.Version).HasDefaultValue(1);
-
-            entity.HasOne(d => d.Case).WithMany(p => p.Documents)
-                .HasForeignKey(d => d.CaseId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Documents_Cases");
-
-            entity.HasOne(d => d.UploadedByNavigation).WithMany(p => p.Documents)
-                .HasForeignKey(d => d.UploadedBy)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Documents_Users");
         });
 
         modelBuilder.Entity<DocumentDtl>(entity =>
@@ -312,16 +225,6 @@ public partial class CmsContext : DbContext
             entity.Property(e => e.EventType).HasMaxLength(20);
             entity.Property(e => e.Reminder).HasDefaultValue(false);
             entity.Property(e => e.Title).HasMaxLength(150);
-
-            entity.HasOne(d => d.Case).WithMany(p => p.Events)
-                .HasForeignKey(d => d.CaseId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Events_Cases");
-
-            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.Events)
-                .HasForeignKey(d => d.CreatedBy)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Events_Users");
         });
 
         modelBuilder.Entity<Invoice>(entity =>
@@ -339,16 +242,6 @@ public partial class CmsContext : DbContext
             entity.Property(e => e.Status)
                 .HasMaxLength(20)
                 .HasDefaultValue("Pending");
-
-            entity.HasOne(d => d.Case).WithMany(p => p.Invoices)
-                .HasForeignKey(d => d.CaseId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Invoices_Cases");
-
-            entity.HasOne(d => d.Client).WithMany(p => p.Invoices)
-                .HasForeignKey(d => d.ClientId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Invoices_Clients");
         });
 
         modelBuilder.Entity<InvoiceItem>(entity =>
@@ -363,11 +256,6 @@ public partial class CmsContext : DbContext
                 .HasComputedColumnSql("([Quantity]*[UnitPrice])", true)
                 .HasColumnType("decimal(21, 2)");
             entity.Property(e => e.UnitPrice).HasColumnType("decimal(10, 2)");
-
-            entity.HasOne(d => d.Invoice).WithMany(p => p.InvoiceItems)
-                .HasForeignKey(d => d.InvoiceId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_InvoiceItems_Invoices");
         });
 
         modelBuilder.Entity<Message>(entity =>
@@ -385,21 +273,6 @@ public partial class CmsContext : DbContext
             entity.Property(e => e.ToUserId)
                 .HasMaxLength(450)
                 .HasColumnName("ToUserID");
-
-            entity.HasOne(d => d.Case).WithMany(p => p.Messages)
-                .HasForeignKey(d => d.CaseId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Messages_Cases");
-
-            entity.HasOne(d => d.FromUser).WithMany(p => p.MessageFromUsers)
-                .HasForeignKey(d => d.FromUserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Messages_FromUser");
-
-            entity.HasOne(d => d.ToUser).WithMany(p => p.MessageToUsers)
-                .HasForeignKey(d => d.ToUserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Messages_ToUser");
         });
 
         modelBuilder.Entity<Note>(entity =>
@@ -415,16 +288,6 @@ public partial class CmsContext : DbContext
             entity.Property(e => e.UserId)
                 .HasMaxLength(450)
                 .HasColumnName("UserID");
-
-            entity.HasOne(d => d.Case).WithMany(p => p.Notes)
-                .HasForeignKey(d => d.CaseId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Notes_Cases");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Notes)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Notes_Users");
         });
 
         modelBuilder.Entity<OptionMst>(entity =>
@@ -486,16 +349,6 @@ public partial class CmsContext : DbContext
                 .HasMaxLength(20)
                 .HasDefaultValue("To-Do");
             entity.Property(e => e.Title).HasMaxLength(150);
-
-            entity.HasOne(d => d.AssignedToNavigation).WithMany(p => p.Tasks)
-                .HasForeignKey(d => d.AssignedTo)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Tasks_Users");
-
-            entity.HasOne(d => d.Case).WithMany(p => p.Tasks)
-                .HasForeignKey(d => d.CaseId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Tasks_Cases");
         });
         modelBuilder.HasSequence("RS001_SEQ");
         modelBuilder.HasSequence("RS002_SEQ");
