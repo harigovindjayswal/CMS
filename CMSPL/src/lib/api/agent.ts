@@ -9,6 +9,7 @@ const sleep = (delay: number) => {
 };
 const agent = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true
 });
 agent.interceptors.response.use((config) => {
   store.uiStore.isBusy();

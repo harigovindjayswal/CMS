@@ -18,3 +18,10 @@ type Client = {
   // createdDate: string
   // isActive: boolean
 }
+
+type User = {
+    id: string
+    email: string
+    displayName: string
+    image?: string
+}

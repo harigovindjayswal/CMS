@@ -5,22 +5,26 @@ import { useLocation } from "react-router";
 export const useClients = (id?:number) => {
   const queryClient = useQueryClient();
   const location=useLocation();
-  const { data: clients, isPending } = useQuery({
+  const currentUser = queryClient.getQueryData(['user']);
+
+  const { data: clients, isLoading } = useQuery({
     queryKey: ["clients"],
     queryFn: async () => {
       const response = await agent.get<Client[]>("/Clients/Client");
       return response.data;
     },
-    enabled:!id && location.pathname==='/clients'
+    enabled: !id && location.pathname === '/clients' && !!currentUser
   });
+
   const {data:client,isLoading:isClientLoading}=useQuery({
     queryKey:['clients',id],
     queryFn:async ()=>{
        const response=await agent.get<Client>(`/Clients/Client/${id}`)
        return response.data;
     },
-    enabled:!!id
+    enabled: !!id && !!currentUser
   })
+
   const updateClient = useMutation({
     mutationFn: async (client: Client) => {
       console.log(client);
@@ -56,7 +60,7 @@ export const useClients = (id?:number) => {
 
   return {
     clients,
-    isPending,
+    isLoading,
     updateClient,
     createClient,
     deleteClient,
