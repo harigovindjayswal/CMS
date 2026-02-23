@@ -5,7 +5,7 @@ import { useController } from "react-hook-form"
 import type { FieldValues, UseControllerProps } from "react-hook-form"
 
 type Props<T extends FieldValues> = {
-    items: {text: string, value: string}[];
+    items: {id: string, name: string}[];
     label: string;
 } & UseControllerProps<T> & Partial<SelectInputProps>
 
@@ -21,8 +21,8 @@ export default function SelectInput<T extends FieldValues>(props: Props<T>) {
                 onChange={field.onChange}
             >
                 {props.items.map(item => (
-                    <MenuItem key={item.value} value={item.value}>
-                        {item.text}
+                    <MenuItem key={item.id} value={item.id}>
+                        {item.name}
                     </MenuItem>
                 ))}
             </Select>

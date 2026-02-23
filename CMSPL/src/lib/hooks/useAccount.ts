@@ -11,7 +11,7 @@ export const useAccount = () => {
 
     const loginUser = useMutation({
         mutationFn: async (creds: LoginSchema) => {
-            await agent.post('/login?useCookies=true', creds);
+            await agent.post('/account/login?useCookies=true', creds);
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({
@@ -27,7 +27,7 @@ export const useAccount = () => {
         },
         onSuccess: async () => {
             toast.success('Register successful - you can now login');
-            navigate('/login');
+            navigate('/account/login');
         }
     })
 

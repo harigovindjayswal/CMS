@@ -1,20 +1,16 @@
-
+using Application.Clients.Queries;
+using Application.Clients.Validatators;
 using Application.Core;
 using AutoMapper;
 using CMSAPI;
-using CMSAPI.Mappings;
-using CMSApplication.Clients.Commands;
-using CMSApplication.Clients.Queries;
-using CMSApplication.Clients.Validatators;
-using CMSDb.DbModels;
-using CMSDb.IdentityModels;
-using CMSRep.IServices;
-using CMSRep.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Context;
+using Persistence.DependencyInjection;
+using Persistence.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,11 +25,14 @@ builder.Services.AddControllers(opt =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<CmsContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddDbContext<CmsIdentityContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<ICMSService, CMSService>();
+// builder.Services.AddDbContext<CmsContext>(options =>
+//     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// builder.Services.AddDbContext<CmsIdentityContext>(options =>
+// options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// builder.Services.AddScoped<ICMSService, CMSService>();
+builder.Services.AddPersistence(builder.Configuration);
+builder.Services.AddPersistenceIdentity(builder.Configuration);
 builder.Services.AddSingleton(new MapperConfiguration(cfg =>
 {
     cfg.AddProfile<MappingProfile>();
@@ -50,12 +49,21 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateClientValidator>();
 builder.Services.AddTransient<ExceptionMiddleware>();
 //builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
-builder.Services.AddIdentityApiEndpoints<User>(opt =>
-{
-    opt.User.RequireUniqueEmail = true;
-})
-.AddRoles<IdentityRole>()
-.AddEntityFrameworkStores<CmsIdentityContext>();
+// builder.Services.AddIdentityApiEndpoints<User>(opt =>
+// {
+//     opt.User.RequireUniqueEmail = true;
+// })
+// .AddRoles<IdentityRole>()
+// .AddEntityFrameworkStores<CmsIdentityContext>();
+
+builder.Services
+    .AddIdentity<User, IdentityRole>(opt =>
+    {
+        opt.User.RequireUniqueEmail = true;
+    })
+    .AddEntityFrameworkStores<CmsIdentityContext>()
+    .AddDefaultTokenProviders();
+
 
 var app = builder.Build();
 
@@ -84,6 +92,24 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 // 7️⃣ Endpoint execution
 app.MapControllers();
-app.MapGroup("api").MapIdentityApi<User>(); // api/login
+//app.MapGroup("api").MapIdentityApi<User>(); // api/login
+async Task SeedRoles(IServiceProvider serviceProvider)
+{
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
+    string[] roles = { "Admin", "Lawyer","Staff", "Client" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedRoles(services);
+}
 app.Run();

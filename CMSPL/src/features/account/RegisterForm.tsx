@@ -8,10 +8,14 @@ import {
   registerSchema,
   type RegisterSchema,
 } from "../../lib/schemas/registerSchema.ts";
-import { Link } from "react-router";
-
+import { Link, useLocation, useNavigate } from "react-router";
+import SelectInput from "../../app/shared/components/SelectInput.tsx";
+import { useUtility } from "../../lib/hooks/useUtility.ts";
 export default function RegisterForm() {
   const { registerUser } = useAccount();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const {isLoading,optionLoader}=useUtility("1");
   const {
     control,
     handleSubmit,
@@ -20,11 +24,17 @@ export default function RegisterForm() {
   } = useForm<RegisterSchema>({
     mode: "onTouched",
     resolver: zodResolver(registerSchema),
+    defaultValues:{
+      userType:" "
+    }
   });
 
   const onSubmit = async (data: RegisterSchema) => {
     console.log(data);
     await registerUser.mutateAsync(data, {
+      onSuccess: () => {
+                navigate(location.state?.from || '/login')
+            },
       onError: (error) => {
         if (Array.isArray(error)) {
           error.forEach((err) => {
@@ -33,7 +43,7 @@ export default function RegisterForm() {
               setError("password", { message: err });
           });
         }
-      },
+      }
     });
   };
 
@@ -69,6 +79,15 @@ export default function RegisterForm() {
         name="password"
         type="password"
       />
+
+      <SelectInput
+        items={optionLoader}
+        label="User Type"
+        control={control}
+        name="userType"
+        disabled={isLoading}
+      />
+
       <Button
         type="submit"
         loading={isSubmitting}
