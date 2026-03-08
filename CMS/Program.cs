@@ -1,13 +1,17 @@
+using System.Security.Claims;
+using System.Text;
 using Application.Clients.Queries;
 using Application.Clients.Validatators;
 using Application.Core;
 using AutoMapper;
 using CMSAPI;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Persistence.Context;
 using Persistence.DependencyInjection;
 using Persistence.Identity;
@@ -16,7 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers(opt => 
+builder.Services.AddControllers(opt =>
 {
     var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
     opt.Filters.Add(new AuthorizeFilter(policy));
@@ -49,21 +53,63 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateClientValidator>();
 builder.Services.AddTransient<ExceptionMiddleware>();
 //builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
-// builder.Services.AddIdentityApiEndpoints<User>(opt =>
-// {
-//     opt.User.RequireUniqueEmail = true;
-// })
-// .AddRoles<IdentityRole>()
-// .AddEntityFrameworkStores<CmsIdentityContext>();
-
 builder.Services
-    .AddIdentity<User, IdentityRole>(opt =>
+    .AddIdentityCore<User>(opt =>
     {
         opt.User.RequireUniqueEmail = true;
     })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<CmsIdentityContext>()
+    .AddSignInManager<SignInManager<User>>()
     .AddDefaultTokenProviders();
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                // 1️⃣ Check Authorization header (Mobile)
+                var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
+                {
+                    context.Token = authHeader.Substring("Bearer ".Length);
+                }
+                else
+                {
+                    // 2️⃣ Otherwise check HttpOnly cookie (Web)
+                    context.Token = context.Request.Cookies["accessToken"];
+                }
+
+                return Task.CompletedTask;
+            }
+        };
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtSettings["Key"]!)
+            ),
+
+            ClockSkew = TimeSpan.Zero // no extra expiration tolerance
+        };
+
+    });
+
+builder.Services.AddAuthorization();
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -74,6 +120,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// 6️⃣ Your custom exception middleware (must wrap controllers!)
+app.UseMiddleware<ExceptionMiddleware>();
 // 2️⃣ Redirection (only if HTTPS is configured properly)
 app.UseHttpsRedirection();
 
@@ -87,8 +135,7 @@ app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 6️⃣ Your custom exception middleware (must wrap controllers!)
-app.UseMiddleware<ExceptionMiddleware>();
+
 
 // 7️⃣ Endpoint execution
 app.MapControllers();
@@ -97,7 +144,7 @@ async Task SeedRoles(IServiceProvider serviceProvider)
 {
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    string[] roles = { "Admin", "Lawyer","Staff", "Client" };
+    string[] roles = { "Admin", "Lawyer", "Staff", "Client" };
 
     foreach (var role in roles)
     {
