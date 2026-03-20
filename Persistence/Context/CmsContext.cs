@@ -40,6 +40,18 @@ public class CmsContext : DbContext
     public virtual DbSet<Otpdtl> Otpdtls { get; set; }
 
     public virtual DbSet<CaseTask> Tasks { get; set; }
+
+    // Master data
+    public virtual DbSet<StateMst> States { get; set; }
+    public virtual DbSet<DistrictMst> Districts { get; set; }
+    public virtual DbSet<CityMst> Cities { get; set; }
+    public virtual DbSet<CaseTypeMst> CaseTypes { get; set; }
+    public virtual DbSet<CourtTypeMst> CourtTypes { get; set; }
+    public virtual DbSet<CourtMst> Courts { get; set; }
+
+    // Lawyer workflow
+    public virtual DbSet<Lawyer> Lawyers { get; set; }
+    public virtual DbSet<LawyerRequest> LawyerRequests { get; set; }
 protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

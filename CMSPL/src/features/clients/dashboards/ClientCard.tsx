@@ -58,7 +58,9 @@ export default function ClientCard({ clients }: Prop) {
         <CardContent sx={{ p: 0 }}>
           <Box display={"flex"} alignItems={"center"} mb={2} px={2}>
             <AccessTime sx={{ mr: 1 }} />
-            <Typography variant="body2">{formatDate(clients.createdDate)}</Typography>
+            <Typography variant="body2">
+              {clients.createdDate ? formatDate(clients.createdDate) : "-"}
+            </Typography>
             <Place sx={{ ml: 3, mr: 1 }} />
             <Typography variant="body2">{clients.address}</Typography>
           </Box>

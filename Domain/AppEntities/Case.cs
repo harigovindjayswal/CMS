@@ -9,6 +9,9 @@ public partial class Case
     [Key]
     public int CaseId { get; set; }
 
+    // Optional: link back to the accepted lawyer request that originated the case
+    public int? LawyerRequestId { get; set; }
+
     public int ClientId { get; set; }
 
     public string Title { get; set; } = null!;
@@ -18,6 +21,12 @@ public partial class Case
     public string? CaseType { get; set; }
 
     public string? CourtName { get; set; }
+
+    public string? CaseNumber { get; set; }
+
+    public string? Purpose { get; set; }
+
+    public DateTime? FilingDate { get; set; }
 
     public string? Opponent { get; set; }
 

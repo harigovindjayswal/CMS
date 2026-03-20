@@ -44,7 +44,9 @@ export default function ClientDetailsHeader({client}: Props) {
                 {/* Text Section */}
                 <Box>
                     <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{client.address}</Typography>
-                    <Typography variant="subtitle1">{formatDate(client.createdDate)}</Typography>
+                    <Typography variant="subtitle1">
+                        {client.createdDate ? formatDate(client.createdDate) : "-"}
+                    </Typography>
                     <Typography variant="subtitle2">
                         Hosted by <Link to={`/profiles/username`} style={{ color: 'white', fontWeight: 'bold' }}>Bob</Link>
                     </Typography>

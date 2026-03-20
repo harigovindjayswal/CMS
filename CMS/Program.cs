@@ -3,9 +3,11 @@ using System.Text;
 using Application.Clients.Queries;
 using Application.Clients.Validatators;
 using Application.Core;
+using Application.Interfaces;
 using AutoMapper;
 using CMSAPI;
 using FluentValidation;
+using Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -52,6 +54,9 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateClientValidator>();
 // builder.Services.AddValidatorsFromAssemblyContaining<EditClientValidator>();
 builder.Services.AddTransient<ExceptionMiddleware>();
 //builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserAccessor, UserAccessor>();
+builder.Services.AddScoped<IIdentityService, IdentityService>();
 
 builder.Services
     .AddIdentityCore<User>(opt =>
@@ -109,7 +114,6 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
-builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -130,7 +134,9 @@ app.UseHttpsRedirection();
 
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
     .AllowCredentials()
-    .WithOrigins("http://localhost:3000", "https://localhost:3000"));
+    .WithOrigins(
+        "http://localhost:3000", "https://localhost:3000",
+        "http://localhost:5173", "https://localhost:5173"));
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -144,7 +150,7 @@ async Task SeedRoles(IServiceProvider serviceProvider)
 {
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    string[] roles = { "Admin", "Lawyer", "Staff", "Client" };
+    string[] roles = { "Admin", "Lawyer", "LawyerAdmin", "Staff", "Client" };
 
     foreach (var role in roles)
     {
@@ -157,6 +163,14 @@ async Task SeedRoles(IServiceProvider serviceProvider)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+
+    // Ensure databases are created/updated before seeding roles.
+    var identityDb = services.GetRequiredService<CmsIdentityContext>();
+    await identityDb.Database.MigrateAsync();
+
+    var appDb = services.GetRequiredService<CmsContext>();
+    await appDb.Database.MigrateAsync();
+
     await SeedRoles(services);
 }
 app.Run();

@@ -27,7 +27,7 @@ export const useAccount = () => {
     },
     onSuccess: async () => {
       toast.success("Register successful - you can now login");
-      navigate("/account/login");
+      navigate("/login");
     },
   });
 
@@ -46,6 +46,7 @@ export const useAccount = () => {
     queryKey: ["user"],
     queryFn: async () => {
       const response = await agent.get<User>("/account/user-info");
+      console.log(response.data)
       return response.data;
     },
     //enabled: !queryClient.getQueryData(['user'])

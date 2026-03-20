@@ -43,10 +43,13 @@ export default function NavBar() {
               </MenuItem>
             </Box>
             <Box sx={{ display: "flex" }}>
-              <MenuItemLink to="/clients">Clients</MenuItemLink>
-              <MenuItemLink to="/createClient">Create Client</MenuItemLink>
-              <MenuItemLink to="/counter">Counter</MenuItemLink>
-              <MenuItemLink to="/errors">Errors</MenuItemLink>
+              {currentUser ? <MenuItemLink to="/dashboard">Dashboard</MenuItemLink> : null}
+              {currentUser?.userType === "Admin" ? (
+                <>
+                  <MenuItemLink to="/errors">Errors</MenuItemLink>
+                  <MenuItemLink to="/counter">Counter</MenuItemLink>
+                </>
+              ) : null}
             </Box>
             <Box display='flex' alignItems='center'>
                             {currentUser ? (

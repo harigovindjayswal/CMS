@@ -30,7 +30,7 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginSchema) => {
     await loginUser.mutateAsync(data, {
       onSuccess: () => {
-        navigate(location.state?.from || "/clients");
+        navigate(location.state?.from || "/dashboard");
       },
       onError: () => {
         toast.warning("Something went wrong, please try after some time !");

@@ -14,6 +14,7 @@ namespace CMSAPI.Areas.ClientApp.Controllers
     [Area("Clients")]
     [Route("api/[area]/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,LawyerAdmin")]
     public class ClientController : BaseApiController
     {
         [HttpGet]

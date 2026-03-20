@@ -2,6 +2,7 @@ import { Box, Container, CssBaseline } from "@mui/material";
 import NavBar from "./NavBar";
 import { Outlet, useLocation } from "react-router";
 import HomePage from "../../features/home/HomePage";
+import SideNav from "./SideNav";
 
 function App() {
   const location = useLocation();
@@ -14,9 +15,14 @@ function App() {
         ) : (
           <>
             <NavBar />
-            <Container maxWidth="xl" sx={{ mt: 3 }}>
-              <Outlet />
-            </Container>
+            <Box sx={{ display: "flex" }}>
+              <SideNav />
+              <Box component="main" sx={{ flexGrow: 1 }}>
+                <Container maxWidth="xl" sx={{ mt: 3 }}>
+                  <Outlet />
+                </Container>
+              </Box>
+            </Box>
           </>
         )}
       </Box>

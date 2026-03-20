@@ -1,5 +1,6 @@
 ﻿
 using Application.Clients.DTO;
+using Application.Interfaces;
 using Domain.AppEntities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -20,13 +21,19 @@ namespace Application.Clients.Queries
             public required int Id { get; set; }
         }
 
-        public class Handler(CmsContext context) : IRequestHandler<Query, Result<ClientDTO>>
+        public class Handler(CmsContext context, IUserAccessor userAccessor) : IRequestHandler<Query, Result<ClientDTO>>
         {
             public async Task<Result<ClientDTO>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var client = await context.Clients
-                .AsNoTracking()
-                .Where(c => c.ClientId == request.Id)
+                var userId = userAccessor.GetUserId();
+                var query = context.Clients.AsNoTracking().Where(c => c.ClientId == request.Id);
+
+                if (userAccessor.IsInRole("LawyerAdmin") && !string.IsNullOrWhiteSpace(userId))
+                {
+                    query = query.Where(c => c.RegisteredByUserId == userId);
+                }
+
+                var client = await query
                 .Select(c => new ClientDTO
                 {
                     ClientId = c.ClientId,

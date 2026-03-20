@@ -13,10 +13,10 @@ namespace CMSAPI.Controllers
     {
 
         [HttpGet("GetOptions")]
-        public async Task<IActionResult> GetOptions([FromQuery] OptionType type)
+        public async Task<IActionResult> GetOptions([FromQuery] OptionType type, [FromQuery] int? parentId)
         {
             return HandleResult(
-                await Mediator.Send(new GetOtpionLoader.Query { Type = type }));
+                await Mediator.Send(new GetOtpionLoader.Query { Type = type, ParentId = parentId }));
         }
 
     }

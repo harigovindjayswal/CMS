@@ -1,13 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import agent from "../api/agent";
 
-export const useUtility = (type: string) => {
+export const useUtility = (type: string, parentId?: number | string) => {
   const { data, isLoading } = useQuery({
-    queryKey: ["optionLoader", type],
+    queryKey: ["optionLoader", type, parentId ?? ""],
     queryFn: async () => {
-      const response = await agent.get<OptionLoader[]>(
-        `/Utility/GetOptions?type=${type}`
-      );
+      const query = parentId ? `&parentId=${parentId}` : "";
+      const response = await agent.get<OptionLoader[]>(`/Utility/GetOptions?type=${type}${query}`);
       return response.data;
     },
     enabled: !!type,

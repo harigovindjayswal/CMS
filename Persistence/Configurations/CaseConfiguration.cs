@@ -13,15 +13,25 @@ public class CaseConfiguration : IEntityTypeConfiguration<Case>
         entity.Property(e => e.CaseId).HasColumnName("CaseID");
         entity.Property(e => e.AssignedTo).HasMaxLength(450);
         entity.Property(e => e.CaseType).HasMaxLength(100);
+        entity.Property(e => e.CaseNumber).HasMaxLength(100);
         entity.Property(e => e.ClientId).HasColumnName("ClientID");
         entity.Property(e => e.CourtName).HasMaxLength(150);
         entity.Property(e => e.CreatedAt)
             .HasDefaultValueSql("(getdate())")
             .HasColumnType("datetime");
+        entity.Property(e => e.FilingDate).HasColumnType("datetime");
         entity.Property(e => e.Opponent).HasMaxLength(150);
+        entity.Property(e => e.Purpose).HasMaxLength(250);
         entity.Property(e => e.Stage).HasMaxLength(20).HasDefaultValue("Filed");
         entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValue("Open");
         entity.Property(e => e.Title).HasMaxLength(200);
         entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+        entity.Property(e => e.LawyerRequestId).HasColumnName("LawyerRequestID");
+
+        entity.HasOne<LawyerRequest>()
+            .WithMany()
+            .HasForeignKey(e => e.LawyerRequestId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

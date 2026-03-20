@@ -24,7 +24,9 @@ export default function clientDetailsInfo({client}: Props) {
                     <CalendarToday color="info" fontSize="large" />
                 </Grid2>
                 <Grid2 size={11}>
-                    <Typography>{formatDate(client.createdDate)}</Typography>
+                    <Typography>
+                        {client.createdDate ? formatDate(client.createdDate) : "-"}
+                    </Typography>
                 </Grid2>
             </Grid2>
             <Divider />

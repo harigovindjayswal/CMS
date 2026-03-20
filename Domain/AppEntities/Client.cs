@@ -11,6 +11,9 @@ public partial class Client
 
     public string? UserId { get; set; }
 
+    // For LawyerAdmin-created accounts scoping
+    public string? RegisteredByUserId { get; set; }
+
     public string? FirstName { get; set; }
 
     public string? MiddleName { get; set; }

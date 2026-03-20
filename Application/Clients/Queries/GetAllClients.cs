@@ -1,5 +1,6 @@
 ﻿using Application.Clients.DTO;
 using Domain.AppEntities;
+using Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
@@ -16,12 +17,20 @@ namespace Application.Clients.Queries
     {
         public class Query : IRequest<List<ClientDTO>> { }
 
-        public class Handler(CmsContext context) : IRequestHandler<Query, List<ClientDTO>>
+        public class Handler(CmsContext context, IUserAccessor userAccessor) : IRequestHandler<Query, List<ClientDTO>>
         {
             public async Task<List<ClientDTO>> Handle(Query request, CancellationToken cancellationToken)
             {
-                //return await context.Clients.ToListAsync(cancellationToken);
-                return await context.Clients
+                var userId = userAccessor.GetUserId();
+                var query = context.Clients.AsNoTracking().AsQueryable();
+
+                // Admin sees all; LawyerAdmin sees only their registrations.
+                if (userAccessor.IsInRole("LawyerAdmin") && !string.IsNullOrWhiteSpace(userId))
+                {
+                    query = query.Where(x => x.RegisteredByUserId == userId);
+                }
+
+                return await query
        .Select(c => new ClientDTO
        {
            ClientId = c.ClientId,

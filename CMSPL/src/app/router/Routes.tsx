@@ -11,6 +11,28 @@ import ServerError from "../../features/errors/ServerError";
 import LoginForm from "../../features/account/LoginForm";
 import RegisterForm from "../../features/account/RegisterForm";
 import RequireAuth from "./RequireAuth";
+import RequireRole from "./RequireRole";
+import MyProfilePage from "../../features/profile/pages/MyProfilePage";
+import MyLawyerRequestsPage from "../../features/lawyerRequests/pages/MyLawyerRequestsPage";
+import IncomingLawyerRequestsPage from "../../features/lawyerRequests/pages/IncomingLawyerRequestsPage";
+import RequestLawyerPage from "../../features/lawyerRequests/pages/RequestLawyerPage";
+import CasesPage from "../../features/cases/pages/CasesPage";
+import CaseDetailsPage from "../../features/cases/pages/CaseDetailsPage";
+import CreateCasePage from "../../features/cases/pages/CreateCasePage";
+import DashboardPage from "../../features/dashboard/DashboardPage";
+import StatesPage from "../../features/admin/masterData/pages/StatesPage";
+import DistrictsPage from "../../features/admin/masterData/pages/DistrictsPage";
+import CitiesPage from "../../features/admin/masterData/pages/CitiesPage";
+import CaseTypesPage from "../../features/admin/masterData/pages/CaseTypesPage";
+import CourtTypesPage from "../../features/admin/masterData/pages/CourtTypesPage";
+import CourtsPage from "../../features/admin/masterData/pages/CourtsPage";
+import RegisterManagedClientPage from "../../features/lawyerAdmin/pages/RegisterManagedClientPage";
+import RegisterManagedLawyerPage from "../../features/lawyerAdmin/pages/RegisterManagedLawyerPage";
+import ManagedClientsPage from "../../features/lawyerAdmin/pages/ManagedClientsPage";
+import ManagedLawyersPage from "../../features/lawyerAdmin/pages/ManagedLawyersPage";
+import ManagedCasesPage from "../../features/lawyerAdmin/pages/ManagedCasesPage";
+import CreateManagedCasePage from "../../features/lawyerAdmin/pages/CreateManagedCasePage";
+import LawyerAdminCaseDetailsPage from "../../features/lawyerAdmin/pages/LawyerAdminCaseDetailsPage";
 
 export const router = createBrowserRouter([
   {
@@ -20,10 +42,71 @@ export const router = createBrowserRouter([
       {
         element: <RequireAuth />,
         children: [
-          { path: "clients", element: <ClientDashboard /> },
-          { path: "clientDetails/:id", element: <ClientDetailsPage /> },
-          { path: "createClient", element: <ClientForm key={"Create"} /> },
-          { path: "manage/:id", element: <ClientForm /> },
+          { path: "dashboard", element: <DashboardPage /> },
+
+          {
+            element: <RequireRole roles={["Admin", "LawyerAdmin"]} />,
+            children: [
+              { path: "clients", element: <ClientDashboard /> },
+              { path: "clientDetails/:id", element: <ClientDetailsPage /> },
+              { path: "createClient", element: <ClientForm key={"Create"} /> },
+              { path: "manage/:id", element: <ClientForm /> },
+            ],
+          },
+
+          {
+            element: <RequireRole roles={["Client", "Lawyer"]} />,
+            children: [{ path: "profile", element: <MyProfilePage /> }],
+          },
+
+          {
+            element: <RequireRole roles={["Client"]} />,
+            children: [
+              { path: "my-requests", element: <MyLawyerRequestsPage /> },
+              { path: "request-lawyer", element: <RequestLawyerPage /> },
+            ],
+          },
+
+          {
+            element: <RequireRole roles={["Lawyer"]} />,
+            children: [
+              { path: "incoming-requests", element: <IncomingLawyerRequestsPage /> },
+              { path: "cases/create/:lawyerRequestId", element: <CreateCasePage /> },
+            ],
+          },
+
+          {
+            element: <RequireRole roles={["Client", "Lawyer"]} />,
+            children: [
+              { path: "cases", element: <CasesPage /> },
+              { path: "cases/:id", element: <CaseDetailsPage /> },
+            ],
+          },
+
+          {
+            element: <RequireRole roles={["Admin"]} />,
+            children: [
+              { path: "admin/master/states", element: <StatesPage /> },
+              { path: "admin/master/districts", element: <DistrictsPage /> },
+              { path: "admin/master/cities", element: <CitiesPage /> },
+              { path: "admin/master/case-types", element: <CaseTypesPage /> },
+              { path: "admin/master/court-types", element: <CourtTypesPage /> },
+              { path: "admin/master/courts", element: <CourtsPage /> },
+            ],
+          },
+
+          {
+            element: <RequireRole roles={["LawyerAdmin"]} />,
+            children: [
+              { path: "lawyeradmin/register-client", element: <RegisterManagedClientPage /> },
+              { path: "lawyeradmin/register-lawyer", element: <RegisterManagedLawyerPage /> },
+              { path: "lawyeradmin/clients", element: <ManagedClientsPage /> },
+              { path: "lawyeradmin/lawyers", element: <ManagedLawyersPage /> },
+              { path: "lawyeradmin/cases", element: <ManagedCasesPage /> },
+              { path: "lawyeradmin/cases/:id", element: <LawyerAdminCaseDetailsPage /> },
+              { path: "lawyeradmin/cases/create", element: <CreateManagedCasePage /> },
+            ],
+          },
         ],
       },
       { path: "", element: <HomePage /> },
