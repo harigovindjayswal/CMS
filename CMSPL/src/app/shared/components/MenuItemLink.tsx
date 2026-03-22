@@ -19,7 +19,7 @@ export default function MenuItemLink({
         fontWeight: "bold",
         color: "inherit",
         "&.active": {
-          color: "yellow",
+          color: "#2E5AA7",
         },
       }}
     >

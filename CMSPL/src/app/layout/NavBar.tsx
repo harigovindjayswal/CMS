@@ -6,38 +6,63 @@ import {
   Container,
   MenuItem,
   LinearProgress,
+  IconButton,
 } from "@mui/material";
-import { Group } from "@mui/icons-material";
+import { Group, Menu as MenuIcon, MenuOpen } from "@mui/icons-material";
 import { NavLink } from "react-router";
 import MenuItemLink from "../shared/components/MenuItemLink";
 import { useStore } from "../../lib/hooks/useStore";
 import { Observer } from "mobx-react-lite";
 import { useAccount } from "../../lib/hooks/useAccount";
 import UserMenu from "./UserMenu";
+import type { SidebarMode } from "./SideNav";
 
-export default function NavBar() {
+export default function NavBar({
+  onToggleSidebar,
+  isMobile,
+  sidebarMode,
+}: {
+  onToggleSidebar: () => void;
+  isMobile: boolean;
+  sidebarMode: SidebarMode;
+}) {
   const { uiStore } = useStore();
   const {currentUser} = useAccount();
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
-        position="static"
+        position="fixed"
         sx={{
-          backgroundImage:
-            "linear-gradient(135deg, #182a73 0%, #218aae 69%, #207aac 89%)",
-          position: "relative",
+          zIndex: (t) => t.zIndex.drawer + 1,
+          height: 64,
+          bgcolor: "background.paper",
+          color: "text.primary",
+          borderBottom: "1px solid",
+          borderColor: "divider",
+          boxShadow: "0 6px 24px rgba(0,0,0,0.06)",
         }}
       >
         <Container maxWidth="xl">
-          <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Box>
+          <Toolbar sx={{ display: "flex", justifyContent: "space-between", gap: 2, minHeight: 64 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              {currentUser ? (
+                <IconButton
+                  onClick={onToggleSidebar}
+                  aria-label={isMobile ? "Open menu" : "Toggle sidebar"}
+                  edge="start"
+                  size="large"
+                  sx={{ mr: 0.5 }}
+                >
+                  {isMobile ? <MenuIcon /> : sidebarMode === "collapsed" ? <MenuIcon /> : <MenuOpen />}
+                </IconButton>
+              ) : null}
               <MenuItem
-                sx={{ display: "flex", gap: 2 }}
+                sx={{ display: "flex", gap: 1.25, borderRadius: 2 }}
                 component={NavLink}
                 to="/"
               >
-                <Group fontSize="large"></Group>
-                <Typography variant="h4" fontWeight="bold">
+                <Group fontSize="large" color="primary" />
+                <Typography variant="h6" fontWeight={800} letterSpacing={0.3}>
                   CMS
                 </Typography>
               </MenuItem>

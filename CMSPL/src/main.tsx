@@ -12,15 +12,19 @@ import { RouterProvider } from "react-router";
 import { router } from "./app/router/Routes.tsx";
 import { store, StoreContext } from "./lib/stores/store.ts";
 import {ToastContainer} from "react-toastify";
+import { ThemeProvider } from "@mui/material/styles";
+import { theme } from "./app/layout/theme";
 const queryClient = new QueryClient();
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <StoreContext.Provider value={store}>
-      <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools />
-        <ToastContainer position='bottom-right' hideProgressBar theme='colored' />
-        <RouterProvider router={router} />
-      </QueryClientProvider>
+      <ThemeProvider theme={theme}>
+        <QueryClientProvider client={queryClient}>
+          <ReactQueryDevtools />
+          <ToastContainer position='bottom-right' hideProgressBar theme='colored' />
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      </ThemeProvider>
     </StoreContext.Provider>
   </StrictMode>
 );

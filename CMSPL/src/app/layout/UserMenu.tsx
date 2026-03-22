@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Avatar, Box, Button, Divider, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
-import { Logout, Person, Work } from "@mui/icons-material";
+import { Logout, Person } from "@mui/icons-material";
 import { Link } from "react-router";
 import { useAccount } from "../../lib/hooks/useAccount";
 
@@ -8,7 +8,6 @@ import { useAccount } from "../../lib/hooks/useAccount";
 export default function UserMenu() {
     const { currentUser, logoutUser } = useAccount();
     const userType = currentUser?.userType;
-    const requestsPath = userType === 'Lawyer' ? '/incoming-requests' : '/my-requests';
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
@@ -44,7 +43,7 @@ export default function UserMenu() {
                     }
                 }}
             >
-                {(userType === 'Client' || userType === 'Lawyer') ? (
+                {/* {(userType === 'Client' || userType === 'Lawyer') ? (
                     <MenuItem component={Link} to={requestsPath} onClick={handleClose}>
                         <ListItemIcon>
                             <Work />
@@ -59,7 +58,7 @@ export default function UserMenu() {
                         </ListItemIcon>
                         <ListItemText>Cases</ListItemText>
                     </MenuItem>
-                ) : null}
+                ) : null} */}
                 {(userType === 'Client' || userType === 'Lawyer') ? (
                     <MenuItem component={Link} to='/profile' onClick={handleClose}>
                         <ListItemIcon>
