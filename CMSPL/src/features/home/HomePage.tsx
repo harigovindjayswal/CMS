@@ -1,11 +1,20 @@
 import { Box, Container, Grid, Typography, Button, Paper } from "@mui/material";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import HubIcon from "@mui/icons-material/Hub";
+import { useAccount } from "../../lib/hooks/useAccount";
+import { useEffect } from "react";
 
 export default function HomePage() {
+  const { currentUser } = useAccount();
+  const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {
+    if (currentUser) {
+      navigate(location.state?.from || "/dashboard", { replace: true });
+    }
+  }, [currentUser]);
   return (
     <Box sx={{ bgcolor: "#F5F7FB", minHeight: "100vh" }}>
-
       {/* 🔷 HEADER */}
       <Box
         sx={{
@@ -45,7 +54,6 @@ export default function HomePage() {
       {/* 🔥 HERO SECTION */}
       <Container maxWidth="lg" sx={{ py: 10 }}>
         <Grid container spacing={6} alignItems="center">
-
           {/* LEFT */}
           <Grid item xs={12} md={6}>
             <Typography variant="h3" fontWeight={700}>
@@ -57,7 +65,8 @@ export default function HomePage() {
             </Typography>
 
             <Typography color="text.secondary" mb={4}>
-              Manage clients, lawyer requests, and cases efficiently in one unified system.
+              Manage clients, lawyer requests, and cases efficiently in one
+              unified system.
             </Typography>
 
             <Box display="flex" gap={2}>

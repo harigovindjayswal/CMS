@@ -11,10 +11,17 @@ import {
 import { Link, useLocation, useNavigate } from "react-router";
 import SelectInput from "../../app/shared/components/SelectInput.tsx";
 import { useUtility } from "../../lib/hooks/useUtility.ts";
+import { useEffect } from "react";
 export default function RegisterForm() {
   const { registerUser } = useAccount();
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentUser } = useAccount();
+    useEffect(() => {
+      if (currentUser) {
+        navigate(location.state?.from || "/dashboard", { replace: true });
+      }
+    }, [currentUser]);
   const {isLoading,optionLoader}=useUtility("1");
   const {
     control,

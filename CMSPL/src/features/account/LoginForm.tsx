@@ -12,9 +12,12 @@ import { useNavigate, useLocation, Link } from "react-router";
 import { toast } from "react-toastify";
 
 export default function LoginForm() {
-  const { loginUser } = useAccount();
+  const { loginUser,currentUser } = useAccount();
   const navigate = useNavigate();
   const location = useLocation();
+  if(currentUser){
+    navigate(location.state?.from || "/dashboard");
+  }
   const {
     control,
     handleSubmit,
