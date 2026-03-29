@@ -39,7 +39,7 @@ export default function NavBar({
           color: "text.primary",
           borderBottom: "1px solid",
           borderColor: "divider",
-          boxShadow: "0 6px 24px rgba(0,0,0,0.06)",
+          boxShadow: "0 6px 24px rgba(26, 23, 23, 0.06)",
         }}
       >
         <Container maxWidth="xl">

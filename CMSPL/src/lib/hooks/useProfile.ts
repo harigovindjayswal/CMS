@@ -11,7 +11,7 @@ export const useProfile = () => {
   const clientProfileQuery = useQuery({
     queryKey: ["profile", "client"],
     queryFn: async () => {
-      const response = await agent.get<ClientProfile>("/Clients/Profile");
+      const response = await agent.get<ClientProfile>("/Clients/Profile/Profile");
       return response.data;
     },
     enabled: userType === "Client",
