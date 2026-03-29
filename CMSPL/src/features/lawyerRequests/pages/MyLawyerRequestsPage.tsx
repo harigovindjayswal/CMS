@@ -46,7 +46,7 @@ export default function MyLawyerRequestsPage() {
             <TableRow key={r.lawyerRequestId}>
               <TableCell>{r.lawyerName}</TableCell>
               <TableCell>{r.caseTypeName}</TableCell>
-              <TableCell>{String(r.status)}</TableCell>
+              <TableCell>{String(r.statusText)}</TableCell>
               <TableCell>{r.lawyerRemark ?? "-"}</TableCell>
             </TableRow>
           ))}

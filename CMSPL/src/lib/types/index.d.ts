@@ -62,6 +62,17 @@ type LawyerProfile = {
   courtDetails?: string;
 };
 
+type StaffProfile = {
+  firstName?: string;
+  middleName?: string;
+  lastName?: string;
+  dateOfBirth?: string | null;
+  emailId?: string;
+  mobileNo?: string;
+  address?: string;
+  lawyerId: number;
+};
+
 type LawyerRequestStatus = "Pending" | "Read" | "Accepted" | "Rejected" | number;
 
 type LawyerRequest = {
@@ -77,6 +88,7 @@ type LawyerRequest = {
   cityId: number;
   caseDescription: string;
   status: LawyerRequestStatus;
+  statusText:StatusText
   lawyerRemark?: string;
 };
 
@@ -179,6 +191,18 @@ type ManagedLawyer = {
   mobileNo?: string | null;
   stateId?: number | null;
   cityId?: number | null;
+  isActive: boolean;
+  createdDate?: string | null;
+};
+
+type ManagedStaff = {
+  staffId: number;
+  userId: string;
+  emailId?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  mobileNo?: string | null;
+  lawyerId: number;
   isActive: boolean;
   createdDate?: string | null;
 };

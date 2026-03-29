@@ -24,6 +24,12 @@ public class UsersController : BaseApiController
         return HandleResult(await Mediator.Send(new GetMyManagedLawyers.Query()));
     }
 
+    [HttpGet("staff")]
+    public async Task<ActionResult> GetMyStaff()
+    {
+        return HandleResult(await Mediator.Send(new GetMyManagedStaff.Query()));
+    }
+
     [HttpPost("clients")]
     public async Task<ActionResult> CreateClient(CreateManagedClientDto dto)
     {
@@ -35,5 +41,10 @@ public class UsersController : BaseApiController
     {
         return HandleResult(await Mediator.Send(new CreateManagedLawyer.Command { Lawyer = dto }));
     }
-}
 
+    [HttpPost("staff")]
+    public async Task<ActionResult> CreateStaff(CreateManagedStaffDto dto)
+    {
+        return HandleResult(await Mediator.Send(new CreateManagedStaff.Command { Staff = dto }));
+    }
+}

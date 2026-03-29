@@ -23,5 +23,6 @@ public class LawyerRequestDto
 
     public LawyerRequestStatus Status { get; set; }
     public string? LawyerRemark { get; set; }
+    public string? StatusText { get; set; }
 }
 

@@ -30,7 +30,25 @@ public class AddCaseDocument
 
             if (caseEntity == null) return Result<int>.Failure("Case not found", 404);
 
-            if (!string.Equals(caseEntity.AssignedTo, userId, StringComparison.OrdinalIgnoreCase))
+            var isAssignedLawyer = string.Equals(caseEntity.AssignedTo, userId, StringComparison.OrdinalIgnoreCase);
+            var isStaffForAssignedLawyer = false;
+            if (!isAssignedLawyer && userAccessor.IsInRole("Staff"))
+            {
+                var assignedLawyerId = await context.Lawyers
+                    .AsNoTracking()
+                    .Where(l => l.UserId == caseEntity.AssignedTo)
+                    .Select(l => l.LawyerId)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (assignedLawyerId != 0)
+                {
+                    isStaffForAssignedLawyer = await context.Staffs
+                        .AsNoTracking()
+                        .AnyAsync(s => s.UserId == userId && s.LawyerId == assignedLawyerId && s.IsActive, cancellationToken);
+                }
+            }
+
+            if (!isAssignedLawyer && !isStaffForAssignedLawyer)
                 return Result<int>.Failure("Forbidden", 403);
 
             var entity = new Document
@@ -52,4 +70,3 @@ public class AddCaseDocument
         }
     }
 }
-

@@ -46,7 +46,24 @@ public class GetDocumentFile
                     .AnyAsync(l => l.UserId == caseEntity.AssignedTo && l.RegisteredByUserId == userId, cancellationToken);
             }
 
-            if (!isAssignedLawyer && !isClient && !isManagingLawyerAdmin)
+            var isStaffForAssignedLawyer = false;
+            if (!isAssignedLawyer && !isClient && !isManagingLawyerAdmin && userAccessor.IsInRole("Staff"))
+            {
+                var assignedLawyerId = await context.Lawyers
+                    .AsNoTracking()
+                    .Where(l => l.UserId == caseEntity.AssignedTo)
+                    .Select(l => l.LawyerId)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (assignedLawyerId != 0)
+                {
+                    isStaffForAssignedLawyer = await context.Staffs
+                        .AsNoTracking()
+                        .AnyAsync(s => s.UserId == userId && s.LawyerId == assignedLawyerId && s.IsActive, cancellationToken);
+                }
+            }
+
+            if (!isAssignedLawyer && !isClient && !isManagingLawyerAdmin && !isStaffForAssignedLawyer)
                 return Result<DocumentFileDto>.Failure("Forbidden", 403);
 
             var title = string.IsNullOrWhiteSpace(document.Title) ? "document" : document.Title.Trim();

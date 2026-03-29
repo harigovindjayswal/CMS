@@ -29,7 +29,7 @@ public class GetOtpionLoader
             {
                 OptionType.Role => await identityContext.Roles
                     .AsNoTracking()
-                    //.Where(r => r.Name == "Client" || r.Name == "Lawyer")
+                    .Where(r => r.Name == "Client" || r.Name == "Lawyer")
                     .Select(r => new OptionLoaderDto
                     {
                         Id = r.Id,

@@ -45,6 +45,28 @@ export function useManagedLawyers() {
   return { list, create };
 }
 
+export function useManagedStaff() {
+  const qc = useQueryClient();
+
+  const list = useQuery({
+    queryKey: ["lawyerAdmin", "staff"],
+    queryFn: async () => {
+      const res = await agent.get<ManagedStaff[]>("/LawyerAdmin/Users/staff");
+      return res.data;
+    },
+  });
+
+  const create = useMutation({
+    mutationFn: async (dto: { email: string; displayName: string; password: string; lawyerId: number; firstName?: string; middleName?: string; lastName?: string; mobileNo?: string }) => {
+      const res = await agent.post<number>("/LawyerAdmin/Users/staff", dto);
+      return res.data;
+    },
+    onSuccess: async () => qc.invalidateQueries({ queryKey: ["lawyerAdmin", "staff"] }),
+  });
+
+  return { list, create };
+}
+
 export function useManagedCases() {
   const qc = useQueryClient();
 

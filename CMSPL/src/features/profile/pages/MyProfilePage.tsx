@@ -14,6 +14,10 @@ import {
   lawyerProfileSchema,
   type LawyerProfileSchema,
 } from "../../../lib/schemas/lawyerProfileSchema";
+import {
+  staffProfileSchema,
+  type StaffProfileSchema,
+} from "../../../lib/schemas/staffProfileSchema";
 
 function ClientProfileForm() {
   const { clientProfileQuery, saveClientProfile } = useProfile();
@@ -184,18 +188,65 @@ function LawyerProfileForm() {
   );
 }
 
+function StaffProfileForm() {
+  const { staffProfileQuery, saveStaffProfile } = useProfile();
+
+  const form = useForm<StaffProfileSchema>({
+    mode: "onTouched",
+    resolver: zodResolver(staffProfileSchema),
+    defaultValues: { lawyerId: 0 },
+  });
+
+  useEffect(() => {
+    if (staffProfileQuery.data) form.reset(staffProfileQuery.data);
+  }, [staffProfileQuery.data, form]);
+
+  return (
+    <Paper
+      component="form"
+      onSubmit={form.handleSubmit(async (data) => {
+        await saveStaffProfile.mutateAsync(data);
+      })}
+      sx={{ p: 3, borderRadius: 3, maxWidth: "md", mx: "auto" }}
+    >
+      <Typography variant="h5" fontWeight="bold">
+        My profile (Staff)
+      </Typography>
+      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, mt: 2 }}>
+        <TextInput label="First name" control={form.control} name="firstName" />
+        <TextInput label="Last name" control={form.control} name="lastName" />
+        <TextInput label="Email" control={form.control} name="emailId" />
+        <TextInput label="Mobile" control={form.control} name="mobileNo" />
+        <TextInput label="Address" control={form.control} name="address" />
+        <TextInput label="Assigned Lawyer ID" control={form.control} name="lawyerId" disabled />
+      </Box>
+      <Button
+        sx={{ mt: 3 }}
+        type="submit"
+        variant="contained"
+        size="large"
+        disabled={!form.formState.isValid}
+        loading={saveStaffProfile.isPending}
+      >
+        Save
+      </Button>
+    </Paper>
+  );
+}
+
 export default function MyProfilePage() {
   const { userType } = useProfile();
 
   if (!userType) return <Typography>Loading...</Typography>;
   if (userType === "Client") return <ClientProfileForm />;
   if (userType === "Lawyer") return <LawyerProfileForm />;
+  if (userType === "Staff") return <StaffProfileForm />;
 
   return (
     <Paper sx={{ p: 3, borderRadius: 3 }}>
       <Typography variant="h5">My profile</Typography>
       <Typography sx={{ mt: 1 }}>
-        Profile management is currently available for Client and Lawyer accounts.
+        Profile management is currently available for Client, Lawyer, and Staff accounts.
       </Typography>
     </Paper>
   );

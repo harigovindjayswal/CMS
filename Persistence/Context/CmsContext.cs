@@ -52,7 +52,9 @@ public class CmsContext : DbContext
     // Lawyer workflow
     public virtual DbSet<Lawyer> Lawyers { get; set; }
     public virtual DbSet<LawyerRequest> LawyerRequests { get; set; }
-protected override void OnModelCreating(ModelBuilder modelBuilder)
+    public virtual DbSet<Staff> Staffs { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);

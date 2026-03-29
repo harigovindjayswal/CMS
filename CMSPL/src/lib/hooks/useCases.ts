@@ -26,13 +26,13 @@ type AddNotePayload = {
   isPrivate: boolean;
 };
 
-export const useCases = (mode: "client" | "lawyer") => {
+export const useCases = (mode: "client" | "lawyer" | "staff") => {
   const queryClient = useQueryClient();
 
   const listQuery = useQuery({
     queryKey: ["cases", mode],
     queryFn: async () => {
-      const url = mode === "client" ? "/Clients/Cases" : "/Lawyer/Cases";
+      const url = mode === "client" ? "/Clients/Cases" : mode === "staff" ? "/Staff/Cases" : "/Lawyer/Cases";
       const response = await agent.get<CaseItem[]>(url);
       return response.data;
     },
@@ -43,7 +43,7 @@ export const useCases = (mode: "client" | "lawyer") => {
     useQuery({
       queryKey: ["cases", mode, id],
       queryFn: async () => {
-        const url = mode === "client" ? `/Clients/Cases/${id}` : `/Lawyer/Cases/${id}`;
+        const url = mode === "client" ? `/Clients/Cases/${id}` : mode === "staff" ? `/Staff/Cases/${id}` : `/Lawyer/Cases/${id}`;
         const response = await agent.get<CaseDetails>(url);
         return response.data;
       },
@@ -74,7 +74,12 @@ export const useCases = (mode: "client" | "lawyer") => {
 
   const addNote = useMutation({
     mutationFn: async (payload: AddNotePayload) => {
-      const url = mode === "client" ? "/Clients/Cases/notes" : "/Lawyer/Cases/notes";
+      const url =
+        mode === "client"
+          ? "/Clients/Cases/notes"
+          : mode === "staff"
+            ? "/Staff/Cases/notes"
+            : "/Lawyer/Cases/notes";
       await agent.post(url, payload);
     },
     onSuccess: async (_data, variables) => {
@@ -89,13 +94,14 @@ export const useCases = (mode: "client" | "lawyer") => {
       formData.append("file", input.file);
       if (input.title) formData.append("title", input.title);
       if (input.category) formData.append("category", input.category);
-      await agent.post(`/Lawyer/Cases/${input.caseId}/documents`, formData, {
+      const url = mode === "staff" ? `/Staff/Cases/${input.caseId}/documents` : `/Lawyer/Cases/${input.caseId}/documents`;
+      await agent.post(url, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
     },
     onSuccess: async (_data, variables) => {
       toast.success("Document uploaded");
-      await queryClient.invalidateQueries({ queryKey: ["cases", "lawyer", variables.caseId] });
+      await queryClient.invalidateQueries({ queryKey: ["cases", mode, variables.caseId] });
     },
   });
 
@@ -108,4 +114,3 @@ export const useCases = (mode: "client" | "lawyer") => {
     uploadDocument,
   };
 };
-

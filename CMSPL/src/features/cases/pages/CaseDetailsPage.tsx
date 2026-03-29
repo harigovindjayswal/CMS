@@ -22,7 +22,7 @@ export default function CaseDetailsPage() {
   const { currentUser } = useAccount();
   const userType = currentUser?.userType;
 
-  const cases = useCases(userType === "Lawyer" ? "lawyer" : "client");
+  const cases = useCases(userType === "Lawyer" ? "lawyer" : userType === "Staff" ? "staff" : "client");
   const details = cases.detailsQuery(caseId);
 
   const [note, setNote] = useState("");
@@ -79,7 +79,7 @@ export default function CaseDetailsPage() {
 
       <Divider sx={{ my: 3 }} />
       <Typography variant="h6">Documents</Typography>
-      {userType === "Lawyer" ? (
+      {userType === "Lawyer" || userType === "Staff" ? (
         <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 1, mt: 1 }}>
           <TextField value={docTitle} onChange={(e) => setDocTitle(e.target.value)} size="small" placeholder="Title" />
           <TextField value={docCategory} onChange={(e) => setDocCategory(e.target.value)} size="small" placeholder="Category" />

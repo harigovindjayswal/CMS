@@ -28,6 +28,16 @@ export const useProfile = () => {
     retry: false,
   });
 
+  const staffProfileQuery = useQuery({
+    queryKey: ["profile", "staff"],
+    queryFn: async () => {
+      const response = await agent.get<StaffProfile>("/Staff/Profile");
+      return response.data;
+    },
+    enabled: userType === "Staff",
+    retry: false,
+  });
+
   const saveClientProfile = useMutation({
     mutationFn: async (profile: ClientProfile) => {
       await agent.put("/Clients/Profile", profile);
@@ -48,12 +58,23 @@ export const useProfile = () => {
     },
   });
 
+  const saveStaffProfile = useMutation({
+    mutationFn: async (profile: StaffProfile) => {
+      await agent.put("/Staff/Profile", profile);
+    },
+    onSuccess: async () => {
+      toast.success("Profile saved");
+      await queryClient.invalidateQueries({ queryKey: ["profile", "staff"] });
+    },
+  });
+
   return {
     userType,
     clientProfileQuery,
     lawyerProfileQuery,
+    staffProfileQuery,
     saveClientProfile,
     saveLawyerProfile,
+    saveStaffProfile,
   };
 };
-

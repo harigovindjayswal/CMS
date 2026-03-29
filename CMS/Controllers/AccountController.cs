@@ -25,8 +25,8 @@ namespace CMSAPI.Controllers
             if (role == null)
                 return BadRequest("Invalid user type selected");
             // Optional: restrict allowed roles (VERY IMPORTANT for security)
-            // if (role.Name != "Client" && role.Name != "Lawyer")
-            //     return BadRequest("Unauthorized user type selection");
+            if (role.Name != "Client" && role.Name != "Lawyer")
+                return BadRequest("Unauthorized user type selection");
             var user = new User
             {
                 UserName = registerDto.Email,

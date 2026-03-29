@@ -30,8 +30,24 @@ public class AddCaseNote
 
             var isAssignedLawyer = string.Equals(caseEntity.AssignedTo, userId, StringComparison.OrdinalIgnoreCase);
             var isClient = await context.Clients.AsNoTracking().AnyAsync(c => c.ClientId == caseEntity.ClientId && c.UserId == userId, cancellationToken);
+            var isStaffForAssignedLawyer = false;
+            if (!isAssignedLawyer && !isClient && userAccessor.IsInRole("Staff"))
+            {
+                var assignedLawyerId = await context.Lawyers
+                    .AsNoTracking()
+                    .Where(l => l.UserId == caseEntity.AssignedTo)
+                    .Select(l => l.LawyerId)
+                    .FirstOrDefaultAsync(cancellationToken);
 
-            if (!isAssignedLawyer && !isClient)
+                if (assignedLawyerId != 0)
+                {
+                    isStaffForAssignedLawyer = await context.Staffs
+                        .AsNoTracking()
+                        .AnyAsync(s => s.UserId == userId && s.LawyerId == assignedLawyerId && s.IsActive, cancellationToken);
+                }
+            }
+
+            if (!isAssignedLawyer && !isClient && !isStaffForAssignedLawyer)
                 return Result<int>.Failure("Forbidden", 403);
 
             var isPrivate = isAssignedLawyer ? request.Note.IsPrivate : false;
@@ -53,4 +69,3 @@ public class AddCaseNote
         }
     }
 }
-

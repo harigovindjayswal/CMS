@@ -44,6 +44,7 @@ public class GetMyLawyerRequests
                     CityId = x.CityId,
                     CaseDescription = x.CaseDescription,
                     Status = x.Status,
+                    StatusText=((LawyerRequestStatus)x.Status).ToString(),
                     LawyerRemark = x.LawyerRemark
                 })
                 .ToListAsync(cancellationToken);

@@ -33,6 +33,8 @@ import ManagedLawyersPage from "../../features/lawyerAdmin/pages/ManagedLawyersP
 import ManagedCasesPage from "../../features/lawyerAdmin/pages/ManagedCasesPage";
 import CreateManagedCasePage from "../../features/lawyerAdmin/pages/CreateManagedCasePage";
 import LawyerAdminCaseDetailsPage from "../../features/lawyerAdmin/pages/LawyerAdminCaseDetailsPage";
+import RegisterManagedStaffPage from "../../features/lawyerAdmin/pages/RegisterManagedStaffPage";
+import ManagedStaffPage from "../../features/lawyerAdmin/pages/ManagedStaffPage";
 
 export const router = createBrowserRouter([
   {
@@ -55,7 +57,7 @@ export const router = createBrowserRouter([
           },
 
           {
-            element: <RequireRole roles={["Client", "Lawyer"]} />,
+            element: <RequireRole roles={["Client", "Lawyer", "Staff"]} />,
             children: [{ path: "profile", element: <MyProfilePage /> }],
           },
 
@@ -76,7 +78,7 @@ export const router = createBrowserRouter([
           },
 
           {
-            element: <RequireRole roles={["Client", "Lawyer"]} />,
+            element: <RequireRole roles={["Client", "Lawyer", "Staff"]} />,
             children: [
               { path: "cases", element: <CasesPage /> },
               { path: "cases/:id", element: <CaseDetailsPage /> },
@@ -100,8 +102,10 @@ export const router = createBrowserRouter([
             children: [
               { path: "lawyeradmin/register-client", element: <RegisterManagedClientPage /> },
               { path: "lawyeradmin/register-lawyer", element: <RegisterManagedLawyerPage /> },
+              { path: "lawyeradmin/register-staff", element: <RegisterManagedStaffPage /> },
               { path: "lawyeradmin/clients", element: <ManagedClientsPage /> },
               { path: "lawyeradmin/lawyers", element: <ManagedLawyersPage /> },
+              { path: "lawyeradmin/staff", element: <ManagedStaffPage /> },
               { path: "lawyeradmin/cases", element: <ManagedCasesPage /> },
               { path: "lawyeradmin/cases/:id", element: <LawyerAdminCaseDetailsPage /> },
               { path: "lawyeradmin/cases/create", element: <CreateManagedCasePage /> },

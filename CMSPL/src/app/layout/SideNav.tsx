@@ -42,12 +42,21 @@ function getItems(userType?: string): NavItem[] {
     ];
   }
 
+  if (userType === "Staff") {
+    return [
+      { to: "/cases", label: "Cases", icon: <Gavel /> },
+      { to: "/profile", label: "My Profile", icon: <Assignment /> },
+    ];
+  }
+
   if (userType === "LawyerAdmin") {
     return [
       { to: "/lawyeradmin/register-client", label: "Register Client", icon: <Group /> },
       { to: "/lawyeradmin/register-lawyer", label: "Register Lawyer", icon: <Group /> },
+      { to: "/lawyeradmin/register-staff", label: "Register Staff", icon: <Group /> },
       { to: "/lawyeradmin/clients", label: "My Clients", icon: <Assignment /> },
       { to: "/lawyeradmin/lawyers", label: "My Lawyers", icon: <Assignment /> },
+      { to: "/lawyeradmin/staff", label: "My Staff", icon: <Assignment /> },
       { to: "/lawyeradmin/cases", label: "My Cases", icon: <Gavel /> },
       { to: "/lawyeradmin/cases/create", label: "Create Case", icon: <PlaylistAddCheck /> },
     ];

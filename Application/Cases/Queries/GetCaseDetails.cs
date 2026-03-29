@@ -37,11 +37,28 @@ public class GetCaseDetails
                     .AnyAsync(l => l.UserId == entity.AssignedTo && l.RegisteredByUserId == userId, cancellationToken);
             }
 
-            if (!isAssignedLawyer && !isClient && !isManagingLawyerAdmin)
+            var isStaffForAssignedLawyer = false;
+            if (!isAssignedLawyer && !isClient && !isManagingLawyerAdmin && userAccessor.IsInRole("Staff"))
+            {
+                var assignedLawyerId = await context.Lawyers
+                    .AsNoTracking()
+                    .Where(l => l.UserId == entity.AssignedTo)
+                    .Select(l => l.LawyerId)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (assignedLawyerId != 0)
+                {
+                    isStaffForAssignedLawyer = await context.Staffs
+                        .AsNoTracking()
+                        .AnyAsync(s => s.UserId == userId && s.LawyerId == assignedLawyerId && s.IsActive, cancellationToken);
+                }
+            }
+
+            if (!isAssignedLawyer && !isClient && !isManagingLawyerAdmin && !isStaffForAssignedLawyer)
                 return Result<CaseDetailsDto>.Failure("Forbidden", 403);
 
             var notesQuery = context.Notes.AsNoTracking().Where(n => n.CaseId == entity.CaseId);
-            if (!isAssignedLawyer && !isManagingLawyerAdmin)
+            if (!isAssignedLawyer && !isManagingLawyerAdmin && !isStaffForAssignedLawyer)
                 notesQuery = notesQuery.Where(n => n.IsPrivate != true);
 
             var notes = await notesQuery
