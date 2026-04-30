@@ -147,11 +147,7 @@ export default function HomePage() {
           </Typography>
 
           <Grid container spacing={4}>
-            {[
-              {
-                title: "Client & Case Management",
-                desc: "Centralized platform to manage clients, cases, and legal workflows efficiently.",
-              },
+            {[     
               {
                 title: "Workflow Automation",
                 desc: "Automate repetitive processes and reduce manual effort across operations.",
@@ -160,6 +156,10 @@ export default function HomePage() {
                 title: "Custom Business Solutions",
                 desc: "Tailored digital systems designed to fit your organization's unique needs.",
               },
+              {
+                title: "System Integration",
+                desc: "Seamless integration of multiple systems and APIs to streamline your business workflows.",
+              }
             ].map((service) => (
               <Grid item xs={12} md={4} key={service.title}>
                 <Paper sx={{ p: 4, borderRadius: 4, height: "100%" }}>
