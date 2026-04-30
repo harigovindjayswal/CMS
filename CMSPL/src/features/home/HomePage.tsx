@@ -139,6 +139,78 @@ export default function HomePage() {
         </Grid>
       </Container>
 
+      {/* 🛠️ OUR SERVICES */}
+      <Box sx={{ bgcolor: "white", py: 10 }}>
+        <Container maxWidth="lg">
+          <Typography variant="h4" textAlign="center" mb={6}>
+            Our Services
+          </Typography>
+
+          <Grid container spacing={4}>
+            {[
+              {
+                title: "Client & Case Management",
+                desc: "Centralized platform to manage clients, cases, and legal workflows efficiently.",
+              },
+              {
+                title: "Workflow Automation",
+                desc: "Automate repetitive processes and reduce manual effort across operations.",
+              },
+              {
+                title: "Custom Business Solutions",
+                desc: "Tailored digital systems designed to fit your organization's unique needs.",
+              },
+            ].map((service) => (
+              <Grid item xs={12} md={4} key={service.title}>
+                <Paper sx={{ p: 4, borderRadius: 4, height: "100%" }}>
+                  <Typography fontWeight={600} mb={1}>
+                    {service.title}
+                  </Typography>
+                  <Typography color="text.secondary">{service.desc}</Typography>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* ⭐ WHY CHOOSE US */}
+      <Container maxWidth="lg" sx={{ py: 10 }}>
+        <Typography variant="h4" textAlign="center" mb={6}>
+          Why Choose Us
+        </Typography>
+
+        <Grid container spacing={4}>
+          {[
+            {
+              title: "Scalable Architecture",
+              desc: "Built to grow with your business without performance bottlenecks.",
+            },
+            {
+              title: "Secure & Reliable",
+              desc: "Enterprise-grade security ensuring your data is always protected.",
+            },
+            {
+              title: "User-Friendly Design",
+              desc: "Clean and intuitive UI for seamless user experience.",
+            },
+            {
+              title: "High Performance",
+              desc: "Optimized systems delivering fast and efficient operations.",
+            },
+          ].map((item) => (
+            <Grid item xs={12} md={3} key={item.title}>
+              <Box textAlign="center">
+                <Typography fontWeight={600} mb={1}>
+                  {item.title}
+                </Typography>
+                <Typography color="text.secondary">{item.desc}</Typography>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+
       {/* 🚀 CTA */}
       <Box textAlign="center" py={10}>
         <Typography variant="h4" mb={3}>

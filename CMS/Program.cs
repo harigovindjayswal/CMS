@@ -112,7 +112,21 @@ builder.Services
         };
 
     });
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DynamicCors", policy =>
+    {
+        policy
+            .WithOrigins(allowedOrigins!)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
@@ -132,12 +146,12 @@ app.UseHttpsRedirection();
 // 3️⃣ Routing happens implicitly in ASP.NET Core 6+ templates
 // app.UseRouting();  // Not required unless using endpoints manually
 
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
-    .AllowCredentials()
-    .WithOrigins(
-        "http://localhost:3000", "https://localhost:3000",
-        "http://localhost:5173", "https://localhost:5173"));
-
+// app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
+//     .AllowCredentials()
+//     .WithOrigins(
+//         "http://localhost:3000", "https://localhost:3000",
+//         "http://localhost:5173", "https://localhost:5173"));
+app.UseCors("DynamicCors");
 app.UseAuthentication();
 app.UseAuthorization();
 
