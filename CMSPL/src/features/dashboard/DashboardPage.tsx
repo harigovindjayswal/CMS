@@ -1,27 +1,3 @@
-// import { Navigate } from "react-router";
-// import { useAccount } from "../../lib/hooks/useAccount";
-// import { Typography } from "@mui/material";
-
-// export default function DashboardPage() {
-//   const { currentUser, loadingUserInfo } = useAccount();
-
-//   if (loadingUserInfo) return <Typography>Loading...</Typography>;
-//   if (!currentUser) return <Navigate to="/login" replace />;
-
-//   switch (currentUser.userType) {
-//     case "Client":
-//       return <Navigate to="/request-lawyer" replace />;
-//     case "Lawyer":
-//       return <Navigate to="/incoming-requests" replace />;
-//     case "LawyerAdmin":
-//       return <Navigate to="/lawyeradmin/clients" replace />;
-//     case "Admin":
-//       return <Navigate to="/admin/master/states" replace />;
-//     default:
-//       return <Navigate to="/profile" replace />;
-//   }
-// }
-
 import { Navigate } from "react-router";
 import { useAccount } from "../../lib/hooks/useAccount";
 import {
@@ -30,6 +6,7 @@ import {
   Paper,
   Typography,
   Skeleton,
+  useTheme,
 } from "@mui/material";
 import {
   Gavel,
@@ -47,6 +24,8 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  CartesianGrid,
+  Cell,
 } from "recharts";
 
 // -------------------
@@ -116,25 +95,121 @@ const chartData = [
   { name: "Feb", value: 20 },
   { name: "Mar", value: 15 },
   { name: "Apr", value: 30 },
+  { name: "May", value: 40 },
+  { name: "Jun", value: 23 },
+  { name: "Jul", value: 33 },
+  { name: "Aug", value: 66 },
+  { name: "Sep", value: 80 },
+  { name: "Oct", value: 55 },
+  { name: "Nov", value: 45 },
+  { name: "Dec", value: 65 },
 ];
 
 // -------------------
 // 🔹 Chart Component
 // -------------------
 function DashboardChart({ title }: ChartProps) {
+  const theme = useTheme();
+
+  const currentMonthIndex = new Date().getMonth(); // highlight current month
+
   return (
-    <Paper sx={{ mt: 3, p: 2.5, borderRadius: 3 }}>
-      <Typography variant="h6" mb={2}>
-        {title}
-      </Typography>
-      <ResponsiveContainer width="100%" height={250}>
-        <BarChart data={chartData}>
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="value" />
-        </BarChart>
-      </ResponsiveContainer>
+    <Paper
+      elevation={0}
+      tabIndex={0}
+      sx={{
+        mt: 3,
+        p: 3,
+        borderRadius: 4,
+        border: `1px solid ${theme.palette.divider}`,
+        outline: "none",
+
+        // ✅ Soft focus ring (fix for black border)
+        "&:focus-visible": {
+          boxShadow: `0 0 0 3px ${theme.palette.primary.main}33`,
+        },
+      }}
+    >
+      {/* Header */}
+      <Box display="flex" justifyContent="space-between" mb={2}>
+        <Typography variant="h6" fontWeight={600}>
+          {title}
+        </Typography>
+      </Box>
+
+      {/* Chart */}
+      <Box sx={{ outline: "none", "& *:focus": { outline: "none" } }}>
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart data={chartData} barSize={24}>
+            
+            {/* Gradient */}
+            <defs>
+              <linearGradient id="mainBar" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={theme.palette.primary.main} />
+                <stop offset="100%" stopColor={theme.palette.primary.light} />
+              </linearGradient>
+            </defs>
+
+            {/* Grid */}
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke={theme.palette.divider}
+            />
+
+            {/* X Axis */}
+            <XAxis
+              dataKey="name"
+              tick={{
+                fill: theme.palette.text.secondary,
+                fontSize: 12,
+              }}
+              axisLine={false}
+              tickLine={false}
+            />
+
+            {/* Y Axis */}
+            <YAxis
+              tick={{
+                fill: theme.palette.text.secondary,
+                fontSize: 12,
+              }}
+              axisLine={false}
+              tickLine={false}
+            />
+
+            {/* Tooltip */}
+            <Tooltip
+              cursor={{ fill: "rgba(0,0,0,0.04)" }}
+              contentStyle={{
+                background: theme.palette.background.paper,
+                borderRadius: 10,
+                border: `1px solid ${theme.palette.divider}`,
+                boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+              }}
+            />
+
+            {/* Bars */}
+            <Bar
+              dataKey="value"
+              radius={[8, 8, 0, 0]}
+              animationDuration={800}
+            >
+              {chartData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={
+                    index === currentMonthIndex
+                      ? theme.palette.primary.main // highlight current month
+                      : "url(#mainBar)" // subtle gradient for others
+                  }
+                  opacity={index === currentMonthIndex ? 1 : 0.6}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </Box>
     </Paper>
   );
 }
@@ -146,15 +221,15 @@ function ClientDashboard() {
   return (
     <Box>
       <Typography variant="h5" mb={2} fontWeight="bold">
-        Client Dashboard
+        Lawyer Requests
       </Typography>
 
       <Grid container spacing={2}>
         <Grid item xs={12} md={3}>
-          <StatCard title="Total Cases" value={12} icon={<Gavel />} color="primary" />
+          <StatCard title="Total" value={12} icon={<Gavel />} color="primary" />
         </Grid>
         <Grid item xs={12} md={3}>
-          <StatCard title="Pending Requests" value={3} icon={<PendingActions />} color="warning" />
+          <StatCard title="Pending" value={3} icon={<PendingActions />} color="warning" />
         </Grid>
         <Grid item xs={12} md={3}>
           <StatCard title="Approved" value={7} icon={<CheckCircle />} color="success" />
@@ -164,7 +239,25 @@ function ClientDashboard() {
         </Grid>
       </Grid>
 
-      <DashboardChart title="Case Trends" />
+      <Typography variant="h5" mb={2} fontWeight="bold">
+        Cases
+      </Typography>
+
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={3}>
+          <StatCard title="Filed" value={12} icon={<Gavel />} color="primary" />
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <StatCard title="Admitted" value={3} icon={<PendingActions />} color="warning" />
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <StatCard title="Under Hearing" value={7} icon={<CheckCircle />} color="success" />
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <StatCard title="Reserved for Judgment" value={2} icon={<Cancel />} color="error" />
+        </Grid>
+      </Grid>
+
     </Box>
   );
 }
