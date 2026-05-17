@@ -78,8 +78,8 @@ public class CreateManagedCase
                 Purpose = request.Case.Purpose?.Trim(),
                 FilingDate = request.Case.FilingDate,
                 AssignedTo = lawyer.UserId,
-                Status = "Open",
-                Stage = "Filed",
+                Status = CaseStatus.Active,
+                Stage = CaseStage.Filed,
                 CreatedAt = DateTime.Now
             };
 

@@ -91,8 +91,6 @@ public class CreateCaseForRequest
                 Purpose = request.Case.Purpose?.Trim(),
                 FilingDate = request.Case.FilingDate,
                 AssignedTo = lawyer.UserId,
-                Status = "Open",
-                Stage = "Filed",
                 CreatedAt = DateTime.Now
             };
 

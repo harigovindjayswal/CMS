@@ -1,4 +1,5 @@
 using System;
+using Domain.AppEntities;
 
 namespace Application.Cases.DTO;
 
@@ -18,8 +19,8 @@ public class CaseDto
     public string? Purpose { get; set; }
     public DateTime? FilingDate { get; set; }
 
-    public string Status { get; set; } = null!;
-    public string Stage { get; set; } = null!;
+    public CaseStatus Status { get; set; }
+    public CaseStage Stage { get; set; }
 
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }

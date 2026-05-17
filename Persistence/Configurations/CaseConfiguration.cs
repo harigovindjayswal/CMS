@@ -22,8 +22,17 @@ public class CaseConfiguration : IEntityTypeConfiguration<Case>
         entity.Property(e => e.FilingDate).HasColumnType("datetime");
         entity.Property(e => e.Opponent).HasMaxLength(150);
         entity.Property(e => e.Purpose).HasMaxLength(250);
-        entity.Property(e => e.Stage).HasMaxLength(20).HasDefaultValue("Filed");
-        entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValue("Open");
+        // entity.Property(e => e.Stage).HasMaxLength(20).HasDefaultValue("Filed");
+        // entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValue("Open");
+        entity.Property(e => e.Stage)
+    .HasConversion<string>()
+    .HasMaxLength(20)
+    .HasDefaultValue(CaseStage.Filed);
+
+        entity.Property(e => e.Status)
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .HasDefaultValue(CaseStatus.Active);
         entity.Property(e => e.Title).HasMaxLength(200);
         entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 

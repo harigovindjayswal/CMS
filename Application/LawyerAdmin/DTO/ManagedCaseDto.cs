@@ -1,3 +1,5 @@
+using Domain.AppEntities;
+
 namespace Application.LawyerAdmin.DTO;
 
 public class ManagedCaseDto
@@ -11,8 +13,8 @@ public class ManagedCaseDto
     public string? CaseType { get; set; }
     public string? CourtName { get; set; }
     public string? CaseNumber { get; set; }
-    public string Status { get; set; } = null!;
-    public string Stage { get; set; } = null!;
+    public CaseStatus Status { get; set; }
+     public CaseStage Stage { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }

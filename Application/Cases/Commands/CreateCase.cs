@@ -85,9 +85,7 @@ public class CreateCase
                 CaseNumber = request.Case.CaseNumber?.Trim(),
                 Purpose = request.Case.Purpose?.Trim(),
                 FilingDate = request.Case.FilingDate,
-                AssignedTo = userId,
-                Status = "Open",
-                Stage = "Filed",
+                AssignedTo = userId,               
                 CreatedAt = DateTime.Now
             };
 

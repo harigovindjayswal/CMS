@@ -195,7 +195,7 @@ function DashboardChart({ title }: ChartProps) {
               radius={[8, 8, 0, 0]}
               animationDuration={800}
             >
-              {chartData.map((entry, index) => (
+              {chartData.map((_, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={

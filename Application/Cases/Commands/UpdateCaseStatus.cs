@@ -27,8 +27,8 @@ public class UpdateCaseStatus
             if (!string.Equals(entity.AssignedTo, userId, StringComparison.OrdinalIgnoreCase))
                 return Result<Unit>.Failure("Forbidden", 403);
 
-            entity.Status = request.Status.Status.Trim();
-            entity.Stage = request.Status.Stage.Trim();
+            entity.Status = request.Status.Status;
+            entity.Stage = request.Status.Stage;
             entity.UpdatedAt = DateTime.Now;
 
             var saved = await context.SaveChangesAsync(cancellationToken);

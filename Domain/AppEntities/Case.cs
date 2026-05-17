@@ -30,10 +30,9 @@ public partial class Case
 
     public string? Opponent { get; set; }
 
-    public string Status { get; set; } = null!;
+    public CaseStatus Status { get; set; } = CaseStatus.Active;
 
-    public string Stage { get; set; } = null!;
-
+     public CaseStage Stage { get; set; } = CaseStage.Filed;
     public string? AssignedTo { get; set; }
 
     public DateTime? CreatedAt { get; set; }
